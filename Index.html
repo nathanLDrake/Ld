@@ -1,0 +1,1089 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>Hub</title>
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;600;700;800&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+:root{
+  --bg:#07091a;--s:#0d1130;--card:#0f1435;--card2:#141b45;
+  --b:#1e2650;--b2:#2a3580;
+  --t:#e8ecff;--m:#5a6490;
+  --a:#4f7fff;--a2:#ff4fa0;--a3:#4fffc8;
+  --y:#ffd74f;--r:#ff4f4f;--g:#4fff90;
+}
+html,body{height:100%;overflow:hidden;background:var(--bg);color:var(--t);font-family:'Plus Jakarta Sans',sans-serif}
+/* SPLASH */
+#splash{position:fixed;inset:0;z-index:9999;background:var(--bg);display:flex;flex-direction:column;align-items:center;justify-content:center;gap:14px;transition:opacity .4s}
+#splash.fade{opacity:0;pointer-events:none}
+#splash.gone{display:none}
+.spin{width:36px;height:36px;border:3px solid var(--b2);border-top-color:var(--a);border-radius:50%;animation:spin .7s linear infinite}
+@keyframes spin{to{transform:rotate(360deg)}}
+.smsg{font-size:13px;color:var(--m);font-weight:500}
+/* OVERLAYS */
+.ov{position:fixed;inset:0;z-index:800;display:flex;align-items:center;justify-content:center;background:rgba(7,9,26,.96);backdrop-filter:blur(8px)}
+.ov.hidden{display:none}
+.box{background:var(--card);border:1.5px solid var(--b2);border-radius:18px;padding:28px 32px;width:min(400px,92vw);display:flex;flex-direction:column;gap:13px;box-shadow:0 24px 64px rgba(0,0,0,.7)}
+.otitle{font-size:20px;font-weight:800;text-align:center;background:linear-gradient(135deg,var(--a),var(--a2));-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text}
+.fi{width:100%;background:var(--bg);border:1.5px solid var(--b);border-radius:9px;padding:10px 13px;color:var(--t);font-family:'Plus Jakarta Sans',sans-serif;font-size:14px;outline:none;transition:border-color .2s}
+.fi:focus{border-color:var(--a)}
+.fi::placeholder{color:var(--m)}
+.bb{width:100%;padding:11px;border-radius:10px;border:none;cursor:pointer;font-family:'Plus Jakarta Sans',sans-serif;font-weight:700;font-size:14px;transition:all .18s}
+.bb:hover{filter:brightness(1.1);transform:translateY(-1px)}
+.bb.p{background:linear-gradient(135deg,var(--a),#6a5aff);color:#fff;box-shadow:0 4px 18px rgba(79,127,255,.3)}
+.bb.d{background:linear-gradient(135deg,var(--r),#ff6060);color:#fff}
+.bb.g{background:var(--s);color:var(--m);border:1.5px solid var(--b)}
+.err{color:var(--a2);font-size:12px;font-weight:600;text-align:center;min-height:14px}
+.ok{color:var(--a3);font-size:11px;font-weight:600;text-align:center;min-height:14px}
+.tr{display:flex;gap:6px}
+.tr button{flex:1;padding:9px;border-radius:8px;border:1.5px solid var(--b);background:var(--s);color:var(--m);font-family:'Plus Jakarta Sans',sans-serif;font-weight:700;font-size:13px;cursor:pointer;transition:all .18s}
+.tr button.active{background:var(--a);color:#fff;border-color:var(--a)}
+/* ANN */
+#ann{display:none;position:fixed;top:0;left:0;right:0;z-index:600;background:linear-gradient(90deg,var(--a),var(--a2));color:#fff;font-size:13px;font-weight:700;padding:10px 44px 10px 14px;text-align:center;animation:sd .3s ease}
+@keyframes sd{from{transform:translateY(-100%)}to{transform:translateY(0)}}
+#ann-x{position:absolute;right:14px;top:50%;transform:translateY(-50%);font-size:18px;cursor:pointer;opacity:.8}
+/* FAB */
+#fab{display:none;position:fixed;bottom:22px;right:22px;z-index:700;width:52px;height:52px;border-radius:50%;border:none;cursor:pointer;background:linear-gradient(135deg,var(--y),#ffb84f);color:#07091a;font-size:20px;box-shadow:0 6px 22px rgba(255,215,79,.5);transition:all .2s;align-items:center;justify-content:center}
+#fab:hover{transform:scale(1.1)}
+/* ADMIN */
+#adm{position:fixed;inset:0;z-index:850;display:flex;background:rgba(7,9,26,.98);backdrop-filter:blur(10px)}
+#adm.hidden{display:none}
+#anav{width:180px;background:var(--s);border-right:1.5px solid var(--b);display:flex;flex-direction:column;padding:16px 0;gap:3px;flex-shrink:0}
+#anav .logo{padding:0 14px 14px;border-bottom:1.5px solid var(--b);margin-bottom:6px}
+#anav .logo h2{font-size:14px;font-weight:800;color:var(--y)}
+#anav .logo p{font-size:10px;color:var(--m);margin-top:2px}
+.an{display:flex;align-items:center;gap:8px;padding:9px 14px;border:none;background:none;cursor:pointer;color:var(--m);font-family:'Plus Jakarta Sans',sans-serif;font-weight:600;font-size:12px;transition:all .15s;text-align:left;width:100%}
+.an:hover{background:var(--bg);color:var(--t)}
+.an.active{background:rgba(79,127,255,.15);color:var(--a);border-right:3px solid var(--a)}
+#acont{flex:1;overflow-y:auto;padding:20px}
+#acont::-webkit-scrollbar{width:4px}
+#acont::-webkit-scrollbar-thumb{background:var(--b2);border-radius:3px}
+.ap{display:none;flex-direction:column;gap:14px;max-width:640px}
+.ap.active{display:flex}
+.ap h1{font-size:18px;font-weight:800;color:var(--t)}
+.ap .desc{font-size:12px;color:var(--m);margin-top:-8px;line-height:1.6}
+.sec{background:var(--s);border:1.5px solid var(--b);border-radius:12px;padding:14px;display:flex;flex-direction:column;gap:9px}
+.sec h3{font-size:10px;font-weight:700;color:var(--m);text-transform:uppercase;letter-spacing:.09em}
+.row{display:flex;gap:8px}.row .fi{flex:1}
+.sb{padding:8px 13px;border-radius:8px;border:none;cursor:pointer;font-family:'Plus Jakarta Sans',sans-serif;font-weight:700;font-size:11px;transition:all .15s;white-space:nowrap}
+.sb:hover{filter:brightness(1.1);transform:translateY(-1px)}
+.sb.p{background:var(--a);color:#fff}
+.sb.d{background:var(--r);color:#fff}
+.sb.w{background:var(--y);color:#07091a}
+.sb.s{background:var(--g);color:#07091a}
+.sb.pu{background:#8b5cf6;color:#fff}
+.tog{width:42px;height:22px;border-radius:11px;border:none;cursor:pointer;position:relative;transition:background .25s;flex-shrink:0}
+.tog.on{background:var(--a3)}.tog.off{background:var(--b2)}
+.tog::after{content:'';position:absolute;top:3px;width:16px;height:16px;border-radius:50%;background:#fff;box-shadow:0 1px 4px rgba(0,0,0,.3);transition:left .25s}
+.tog.on::after{left:23px}.tog.off::after{left:3px}
+.trow{display:flex;align-items:center;justify-content:space-between;gap:10px}
+.trow span{font-size:13px;font-weight:700;color:var(--t)}
+.sgrid{display:grid;grid-template-columns:repeat(auto-fill,minmax(120px,1fr));gap:10px}
+.scard{background:var(--card2);border:1.5px solid var(--b);border-radius:10px;padding:12px;display:flex;flex-direction:column;gap:3px}
+.scard .sv{font-size:26px;font-weight:800;color:var(--a)}
+.scard .sl{font-size:10px;color:var(--m);font-weight:600;text-transform:uppercase;letter-spacing:.06em}
+.ul{display:flex;flex-direction:column;gap:5px;max-height:280px;overflow-y:auto}
+.ul::-webkit-scrollbar{width:4px}
+.ul::-webkit-scrollbar-thumb{background:var(--b2);border-radius:3px}
+.ur{display:flex;align-items:center;gap:7px;background:var(--bg);border:1.5px solid var(--b);border-radius:9px;padding:9px 12px;flex-wrap:wrap}
+.un{font-size:12px;font-weight:700;color:var(--t);flex:1;min-width:60px}
+.ubg{font-size:9px;font-weight:700;text-transform:uppercase;letter-spacing:.06em;padding:3px 8px;border-radius:5px}
+.ubg.pending{background:rgba(255,215,79,.12);color:var(--y);border:1px solid rgba(255,215,79,.2)}
+.ubg.active{background:rgba(79,255,144,.1);color:var(--g);border:1px solid rgba(79,255,144,.2)}
+.ubg.banned{background:rgba(255,79,79,.1);color:var(--r);border:1px solid rgba(255,79,79,.2)}
+.ubs{display:flex;gap:4px;flex-wrap:wrap}
+.ub{padding:3px 9px;border-radius:5px;border:none;cursor:pointer;font-family:'Plus Jakarta Sans',sans-serif;font-weight:700;font-size:10px;transition:all .15s}
+.ub:hover{filter:brightness(1.15)}
+.ub.ap{background:rgba(79,255,144,.15);color:var(--g);border:1px solid rgba(79,255,144,.2)}
+.ub.bn{background:rgba(255,79,79,.15);color:var(--r);border:1px solid rgba(255,79,79,.2)}
+.ub.ub2{background:rgba(79,127,255,.15);color:var(--a);border:1px solid rgba(79,127,255,.2)}
+.ub.dy{background:rgba(255,255,255,.05);color:var(--m);border:1px solid var(--b)}
+.ub.dl{background:rgba(255,79,79,.08);color:var(--r);border:1px solid rgba(255,79,79,.15)}
+.fgrid{display:grid;grid-template-columns:repeat(auto-fill,minmax(150px,1fr));gap:8px}
+.ftog{background:var(--bg);border:1.5px solid var(--b);border-radius:9px;padding:10px 12px;display:flex;align-items:center;justify-content:space-between;gap:8px;font-size:12px;font-weight:700;color:var(--t)}
+/* SIDEBAR */
+#sb{position:fixed;top:0;left:0;bottom:0;width:58px;background:var(--s);border-right:1.5px solid var(--b);display:flex;flex-direction:column;align-items:center;padding:10px 0;gap:5px;z-index:100;box-shadow:4px 0 18px rgba(0,0,0,.3)}
+.slogo{width:34px;height:34px;border-radius:9px;background:linear-gradient(135deg,var(--a),var(--a2));display:flex;align-items:center;justify-content:center;font-size:15px;margin-bottom:5px;box-shadow:0 4px 12px rgba(79,127,255,.4)}
+.stb{width:42px;height:42px;border-radius:10px;border:1.5px solid transparent;background:none;cursor:pointer;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:2px;color:var(--m);transition:all .2s;font-size:8px;font-family:'Plus Jakarta Sans',sans-serif;font-weight:700}
+.stb .ic{font-size:17px;line-height:1}
+.stb:hover{background:var(--bg);color:var(--t);border-color:var(--b)}
+.stb.active{background:rgba(79,127,255,.15);border-color:rgba(79,127,255,.4);color:var(--a)}
+/* MAIN */
+#main{margin-left:58px;height:100vh;overflow:hidden}
+.pn{display:none;height:100%;flex-direction:column}
+.pn.active{display:flex}
+/* BROWSER */
+#bbar{display:flex;align-items:center;gap:6px;padding:7px 10px;background:var(--s);border-bottom:1.5px solid var(--b);flex-shrink:0}
+.nb{background:none;border:1.5px solid var(--b);color:var(--m);width:27px;height:27px;border-radius:7px;cursor:pointer;font-size:13px;display:flex;align-items:center;justify-content:center;transition:all .15s}
+.nb:hover{border-color:var(--a);color:var(--a)}
+.nb:disabled{opacity:.2;pointer-events:none}
+.hp{background:rgba(79,255,200,.1);border:1.5px solid rgba(79,255,200,.25);color:var(--a3);padding:5px 11px;border-radius:18px;font-size:11px;font-weight:700;cursor:pointer;white-space:nowrap}
+.hp:hover{background:rgba(79,255,200,.2)}
+#uw{flex:1;display:flex;align-items:center;background:var(--bg);border:1.5px solid var(--b);border-radius:8px;padding:0 10px;gap:6px;transition:all .2s}
+#uw:focus-within{border-color:var(--a);box-shadow:0 0 0 3px rgba(79,127,255,.12)}
+#ub{flex:1;background:none;border:none;outline:none;color:var(--t);font-family:'JetBrains Mono',monospace;font-size:12px;padding:6px 0;min-width:0}
+#ub::placeholder{color:var(--m)}
+#go{background:linear-gradient(135deg,var(--a),#6a5aff);color:#fff;border:none;border-radius:7px;padding:5px 12px;font-family:'Plus Jakarta Sans',sans-serif;font-weight:700;font-size:12px;cursor:pointer}
+#bcon{flex:1;position:relative;overflow:hidden;background:var(--bg)}
+#bhm{display:flex;flex-direction:column;align-items:center;justify-content:center;height:100%;gap:18px;background:var(--bg);position:relative;overflow:hidden}
+#bhm::before{content:'';position:absolute;inset:0;background:radial-gradient(ellipse at 30% 50%,rgba(79,127,255,.07) 0%,transparent 60%),radial-gradient(ellipse at 70% 60%,rgba(255,79,160,.05) 0%,transparent 60%);pointer-events:none}
+.hsw{display:flex;align-items:center;background:var(--card2);border:1.5px solid var(--b2);border-radius:13px;padding:0 13px;gap:9px;width:min(460px,90vw);box-shadow:0 8px 28px rgba(0,0,0,.3);transition:all .2s;position:relative;z-index:1}
+.hsw:focus-within{border-color:var(--a);box-shadow:0 8px 28px rgba(79,127,255,.15)}
+.hsi{flex:1;background:none;border:none;outline:none;color:var(--t);font-family:'Plus Jakarta Sans',sans-serif;font-size:14px;padding:13px 0}
+.hsi::placeholder{color:var(--m)}
+.hsb{background:linear-gradient(135deg,var(--a),#6a5aff);color:#fff;border:none;border-radius:8px;padding:7px 14px;font-family:'Plus Jakarta Sans',sans-serif;font-weight:700;font-size:13px;cursor:pointer}
+.qls{display:flex;gap:7px;flex-wrap:wrap;justify-content:center;max-width:460px;position:relative;z-index:1}
+.ql{background:var(--card);border:1.5px solid var(--b);border-radius:18px;padding:6px 13px;font-size:12px;color:var(--m);cursor:pointer;transition:all .18s;display:flex;align-items:center;gap:5px;font-weight:600}
+.ql:hover{border-color:var(--a3);color:var(--a3);transform:translateY(-1px)}
+#sf{display:none;width:100%;height:100%;border:none;background:#fff}
+#lb{position:absolute;top:0;left:0;height:2px;width:0%;background:linear-gradient(90deg,var(--a),var(--a2));transition:width .3s,opacity .4s;opacity:0;z-index:20}
+/* GAMES */
+#pG.active{display:flex}
+#gbar{display:flex;align-items:center;gap:8px;padding:8px 12px;background:var(--s);border-bottom:1.5px solid var(--b);flex-shrink:0}
+#gs{flex:1;background:var(--bg);border:1.5px solid var(--b);border-radius:8px;padding:7px 11px;color:var(--t);font-family:'Plus Jakarta Sans',sans-serif;font-size:13px;outline:none}
+#gs:focus{border-color:var(--a2)}
+#gs::placeholder{color:var(--m)}
+.bk{background:var(--bg);border:1.5px solid var(--b);color:var(--m);padding:6px 11px;border-radius:8px;font-family:'Plus Jakarta Sans',sans-serif;font-weight:700;font-size:12px;cursor:pointer;white-space:nowrap}
+.bk:hover{color:var(--a2);border-color:rgba(255,79,160,.4)}
+#gcon{flex:1;overflow:hidden;position:relative;background:var(--bg)}
+#gg{height:100%;overflow-y:auto;padding:16px;display:grid;grid-template-columns:repeat(auto-fill,minmax(148px,1fr));gap:11px}
+#gg::-webkit-scrollbar{width:4px}
+#gg::-webkit-scrollbar-thumb{background:var(--b2);border-radius:3px}
+.gc{background:var(--card);border:1.5px solid var(--b);border-radius:13px;overflow:hidden;cursor:pointer;transition:all .22s;display:flex;flex-direction:column;box-shadow:0 4px 14px rgba(0,0,0,.25)}
+.gc:hover{border-color:rgba(255,79,160,.5);transform:translateY(-3px);box-shadow:0 10px 28px rgba(255,79,160,.15)}
+.gt{height:80px;display:flex;align-items:center;justify-content:center;font-size:36px;background:var(--s)}
+.gi{padding:9px 11px}
+.gn{font-size:12px;font-weight:700;color:var(--t);margin-bottom:2px}
+.gtg{font-size:10px;color:var(--m);font-weight:600;text-transform:uppercase;letter-spacing:.05em}
+#gfw{display:none;height:100%;flex-direction:column}
+#gfb{display:flex;align-items:center;gap:8px;padding:7px 12px;background:var(--s);border-bottom:1.5px solid var(--b);flex-shrink:0}
+#gft{font-size:13px;font-weight:700;color:var(--t);flex:1}
+.otb{background:linear-gradient(135deg,var(--a),#6a5aff);color:#fff;border:none;border-radius:7px;padding:5px 12px;font-family:'Plus Jakarta Sans',sans-serif;font-weight:700;font-size:12px;cursor:pointer;text-decoration:none;display:inline-block}
+#gf{width:100%;flex:1;border:none;background:#000}
+/* AI */
+#pA.active{display:flex}
+#aih{padding:10px 16px;background:var(--s);border-bottom:1.5px solid var(--b);flex-shrink:0}
+#aih p{font-size:12px;color:var(--m);font-weight:500}
+#aib{flex:1;display:flex;overflow:hidden}
+#ail{width:42%;border-right:1.5px solid var(--b);display:flex;flex-direction:column;padding:13px;gap:10px;overflow:hidden;flex-shrink:0;background:var(--bg)}
+#ail label{font-size:10px;font-weight:700;color:var(--m);text-transform:uppercase;letter-spacing:.07em}
+#ti{flex:1;background:var(--s);border:1.5px solid var(--b);border-radius:9px;padding:11px;color:var(--t);font-family:'JetBrains Mono',monospace;font-size:12px;outline:none;resize:none;line-height:1.7;transition:all .2s;min-height:0}
+#ti:focus{border-color:var(--a3)}
+#ti::placeholder{color:var(--m)}
+#cc{font-size:11px;color:var(--m);text-align:right;font-family:'JetBrains Mono',monospace}
+#cc.over{color:var(--a2)}
+.ar{display:flex;gap:8px}
+.ab{flex:1;padding:9px;border-radius:9px;border:none;cursor:pointer;font-family:'Plus Jakarta Sans',sans-serif;font-weight:700;font-size:13px;transition:all .18s}
+.ab.p{background:linear-gradient(135deg,var(--a3),#4fd9ff);color:#07091a;box-shadow:0 4px 14px rgba(79,255,200,.25)}
+.ab.s{background:var(--s);color:var(--m);border:1.5px solid var(--b)}
+.ab:hover{transform:translateY(-1px);filter:brightness(1.08)}
+.ab:disabled{opacity:.4;cursor:not-allowed;transform:none}
+#air{flex:1;display:flex;flex-direction:column;padding:13px;gap:10px;overflow:hidden;background:var(--bg)}
+#aqw{display:flex;gap:8px;flex-shrink:0}
+#aq{flex:1;background:var(--s);border:1.5px solid var(--b);border-radius:9px;padding:9px 12px;color:var(--t);font-family:'Plus Jakarta Sans',sans-serif;font-size:13px;outline:none;transition:all .2s}
+#aq:focus{border-color:var(--a3)}
+#aq::placeholder{color:var(--m)}
+#askb{background:linear-gradient(135deg,var(--a3),#4fd9ff);color:#07091a;border:none;border-radius:9px;padding:9px 14px;font-family:'Plus Jakarta Sans',sans-serif;font-weight:700;font-size:13px;cursor:pointer;white-space:nowrap}
+#askb:disabled{opacity:.4;cursor:not-allowed}
+#ao{flex:1;background:var(--s);border:1.5px solid var(--b);border-radius:9px;padding:12px;overflow-y:auto;font-size:13px;line-height:1.8;color:var(--t);min-height:0}
+#ao::-webkit-scrollbar{width:4px}
+#ao::-webkit-scrollbar-thumb{background:var(--b2);border-radius:3px}
+#ao:empty::after{content:'Your summary and answers will appear here…';color:var(--m);font-style:italic}
+.bub{background:var(--card2);border:1.5px solid var(--b);border-radius:10px;padding:11px 13px;margin-bottom:10px;animation:fu .25s ease}
+@keyframes fu{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:translateY(0)}}
+.bub.q{border-left:3px solid var(--a3)}
+.bub.a{border-left:3px solid var(--a)}
+.bub.e{border-left:3px solid var(--r)}
+.bl{font-size:9px;font-weight:700;text-transform:uppercase;letter-spacing:.08em;margin-bottom:5px;color:var(--m)}
+.bub.q .bl{color:var(--a3)}
+.bub.a .bl{color:var(--a)}
+.bub.e .bl{color:var(--r)}
+.dots{display:flex;gap:5px;align-items:center;padding:4px 0}
+.dot{width:6px;height:6px;border-radius:50%;background:var(--a3);animation:bc .9s infinite}
+.dot:nth-child(2){animation-delay:.15s}.dot:nth-child(3){animation-delay:.3s}
+@keyframes bc{0%,80%,100%{transform:translateY(0)}40%{transform:translateY(-7px)}}
+::-webkit-scrollbar{width:4px}
+::-webkit-scrollbar-thumb{background:var(--b2);border-radius:3px}
+</style>
+</head>
+<body>
+
+<div id="splash"><div class="spin"></div><div class="smsg" id="smsg">Connecting…</div></div>
+<div id="ann"><span id="ann-t"></span><span id="ann-x">✕</span></div>
+
+<!-- DISABLED -->
+<div class="ov hidden" id="dis">
+  <div class="box" style="text-align:center;gap:18px;border-color:rgba(255,79,79,.3)">
+    <div style="font-size:46px">🔒</div>
+    <div class="otitle" style="background:linear-gradient(135deg,var(--r),var(--a2));-webkit-background-clip:text;background-clip:text">Site Unavailable</div>
+    <p id="dis-msg" style="font-size:13px;color:var(--m);line-height:1.7">This site has been taken offline by the administrator.</p>
+  </div>
+</div>
+
+<!-- AUTH -->
+<div class="ov hidden" id="auth">
+  <div class="box">
+    <div style="text-align:center;font-size:38px">🔑</div>
+    <div class="otitle" id="auth-t">Sign In</div>
+    <div class="tr">
+      <button class="active" id="t-in" onclick="am('in')">Sign In</button>
+      <button id="t-up" onclick="am('up')">Sign Up</button>
+    </div>
+    <input class="fi" id="sn" placeholder="Your full name…" style="display:none"/>
+    <input class="fi" id="se" placeholder="Email (optional)…" style="display:none"/>
+    <input class="fi" id="su" placeholder="Username…" autocomplete="off" spellcheck="false"/>
+    <input class="fi" id="sp" type="password" placeholder="Password…" onkeydown="if(event.key==='Enter')doAuth(event.shiftKey)"/>
+    <div class="err" id="ae"></div>
+    <button class="bb p" id="auth-btn">Continue →</button>
+    <p style="text-align:center;font-size:11px;color:var(--m)">Admin: hold <kbd style="background:var(--s);padding:2px 5px;border-radius:4px;border:1px solid var(--b)">Shift</kbd> + click Continue</p>
+  </div>
+</div>
+
+<!-- PENDING -->
+<div class="ov hidden" id="pend">
+  <div class="box" style="text-align:center;gap:18px">
+    <div style="font-size:46px">⏳</div>
+    <div class="otitle">Pending Approval</div>
+    <p style="font-size:13px;color:var(--m);line-height:1.8">Your account is waiting for admin approval.<br>Click refresh to check your status.</p>
+    <button class="bb g" onclick="location.reload()">↻ Refresh</button>
+  </div>
+</div>
+
+<!-- BANNED -->
+<div class="ov hidden" id="ban">
+  <div class="box" style="text-align:center;gap:18px;border-color:rgba(255,79,79,.3)">
+    <div style="font-size:46px">🚫</div>
+    <div class="otitle" style="background:linear-gradient(135deg,var(--r),var(--a2));-webkit-background-clip:text;background-clip:text">Banned</div>
+    <p style="font-size:13px;color:var(--m)">You have been banned from this site.</p>
+    <p id="ban-reason" style="font-size:12px;color:var(--r);font-weight:700;display:none"></p>
+  </div>
+</div>
+
+<!-- ADMIN -->
+<div id="adm" class="hidden">
+  <div id="anav">
+    <div class="logo"><h2>⚙️ Admin</h2><p>Control Panel</p></div>
+    <button class="an active" onclick="ap('dash')">📊 Dashboard</button>
+    <button class="an" onclick="ap('users')">👥 Users</button>
+    <button class="an" onclick="ap('msg')">📢 Broadcast</button>
+    <button class="an" onclick="ap('feat')">🔧 Features</button>
+    <button class="an" onclick="ap('access')">🔐 Access</button>
+    <button class="an" onclick="ap('look')">🎨 Appearance</button>
+    <button class="an" onclick="ap('bak')">💾 Backup</button>
+    <button class="an" onclick="ap('danger')">⚠️ Danger</button>
+    <div style="margin-top:auto;padding:10px 14px;border-top:1.5px solid var(--b);display:flex;gap:7px">
+      <button class="sb p" style="flex:1" onclick="cadm()">← Back</button>
+      <button class="sb d" style="flex:1" onclick="lout()">Out</button>
+    </div>
+  </div>
+  <div id="acont">
+
+    <!-- DASHBOARD -->
+    <div class="ap active" id="pg-dash">
+      <h1>📊 Dashboard</h1>
+      <p class="desc">Live overview of everything on your site.</p>
+      <div class="sgrid">
+        <div class="scard"><div class="sv" id="st0">—</div><div class="sl">Total Users</div></div>
+        <div class="scard"><div class="sv" id="st1">—</div><div class="sl">Active</div></div>
+        <div class="scard"><div class="sv" id="st2">—</div><div class="sl">Pending</div></div>
+        <div class="scard"><div class="sv" id="st3">—</div><div class="sl">Banned</div></div>
+      </div>
+      <div class="sec">
+        <h3>Site On / Off</h3>
+        <div class="trow"><span id="slbl">Site ENABLED ✅</span><button class="tog on" id="stog" onclick="togSite()"></button></div>
+      </div>
+      <div class="sec">
+        <h3>Quick Actions</h3>
+        <div style="display:flex;gap:7px;flex-wrap:wrap">
+          <button class="sb p" onclick="ap('users')">👥 Users</button>
+          <button class="sb w" onclick="ap('msg')">📢 Broadcast</button>
+          <button class="sb s" onclick="dlBak()">💾 Backup</button>
+          <button class="sb pu" onclick="ap('look')">🎨 Theme</button>
+          <button class="sb d" onclick="ap('danger')">⚠️ Danger</button>
+        </div>
+      </div>
+      <div class="sec">
+        <h3>Connection Status</h3>
+        <div id="conn-status" style="font-size:13px;color:var(--a3);font-weight:700">✅ Connected to Supabase</div>
+      </div>
+    </div>
+
+    <!-- USERS -->
+    <div class="ap" id="pg-users">
+      <h1>👥 Users</h1>
+      <p class="desc">Manage all user accounts. Changes apply instantly.</p>
+      <div class="sec">
+        <h3>Filter</h3>
+        <div style="display:flex;gap:7px;flex-wrap:wrap">
+          <button class="sb p" onclick="lu('all')">All</button>
+          <button class="sb w" onclick="lu('pending')">Pending</button>
+          <button class="sb s" onclick="lu('active')">Active</button>
+          <button class="sb d" onclick="lu('banned')">Banned</button>
+        </div>
+        <input class="fi" id="usrch" placeholder="Search name or username…" oninput="fusr(this.value)"/>
+      </div>
+      <div class="sec">
+        <h3>User List</h3>
+        <div class="ul" id="ulist"><div style="color:var(--m);font-size:12px">Loading…</div></div>
+        <button class="sb p" style="width:100%" onclick="lu('all')">↻ Refresh</button>
+      </div>
+      <div class="sec">
+        <h3>Ban with Reason</h3>
+        <div class="row">
+          <input class="fi" id="ban-u" placeholder="Username…"/>
+          <input class="fi" id="ban-r" placeholder="Reason (user will see this)…"/>
+          <button class="sb d" onclick="banWR()">Ban</button>
+        </div>
+        <div class="ok" id="ban-ok"></div>
+      </div>
+      <div class="sec">
+        <h3>Approve All Pending</h3>
+        <button class="sb s" style="width:100%" onclick="appAll()">✅ Approve All</button>
+        <div class="ok" id="app-ok"></div>
+      </div>
+    </div>
+
+    <!-- BROADCAST -->
+    <div class="ap" id="pg-msg">
+      <h1>📢 Broadcast</h1>
+      <p class="desc">Send messages to all users instantly.</p>
+      <div class="sec">
+        <h3>Announcement Banner</h3>
+        <textarea class="fi" id="ann-in" rows="3" placeholder="Message for all users…"></textarea>
+        <div style="display:flex;gap:7px">
+          <button class="sb p" style="flex:1" onclick="sndAnn()">📢 Send</button>
+          <button class="sb w" onclick="clrAnn()">Clear</button>
+        </div>
+        <div class="ok" id="ann-ok"></div>
+      </div>
+      <div class="sec">
+        <h3>Alert Popup (users must dismiss)</h3>
+        <div class="row">
+          <input class="fi" id="alrt-in" placeholder="Alert message…"/>
+          <button class="sb d" onclick="sndAlrt()">Send</button>
+        </div>
+        <div class="ok" id="alrt-ok"></div>
+      </div>
+      <div class="sec">
+        <h3>Kick Everyone Off</h3>
+        <p style="font-size:11px;color:var(--m)">Locks everyone out for a set number of minutes. They see a countdown.</p>
+        <div class="row">
+          <input class="fi" id="kick-min" type="number" placeholder="Minutes…" style="width:90px;flex:none"/>
+          <input class="fi" id="kick-msg" placeholder="Message e.g. Back in 5 mins…"/>
+          <button class="sb d" onclick="kickAll()">Kick</button>
+        </div>
+        <div class="ok" id="kick-ok"></div>
+      </div>
+    </div>
+
+    <!-- FEATURES -->
+    <div class="ap" id="pg-feat">
+      <h1>🔧 Feature Controls</h1>
+      <p class="desc">Toggle features on or off for all users instantly.</p>
+      <div class="sec">
+        <h3>Site Sections</h3>
+        <div class="fgrid" id="ftogs"></div>
+      </div>
+      <div class="ok" id="feat-ok"></div>
+    </div>
+
+    <!-- ACCESS -->
+    <div class="ap" id="pg-access">
+      <h1>🔐 Access Control</h1>
+      <div class="sec">
+        <h3>Site On / Off</h3>
+        <div class="trow"><span id="slbl2">Site ENABLED ✅</span><button class="tog on" id="stog2" onclick="togSite()"></button></div>
+      </div>
+      <div class="sec">
+        <h3>Lock Signups</h3>
+        <div class="trow"><span id="sulbl">Signups OPEN</span><button class="tog on" id="sutog" onclick="togSu()"></button></div>
+      </div>
+      <div class="sec">
+        <h3>Change User Password</h3>
+        <div class="row">
+          <input class="fi" id="nup" type="password" placeholder="New signup password…"/>
+          <button class="sb p" onclick="chUPw()">Save</button>
+        </div>
+        <div class="ok" id="upw-ok"></div>
+      </div>
+      <div class="sec">
+        <h3>Change Admin Password</h3>
+        <div class="row">
+          <input class="fi" id="nap" type="password" placeholder="New admin password…"/>
+          <button class="sb d" onclick="chAPw()">Save</button>
+        </div>
+        <div class="ok" id="apw-ok"></div>
+      </div>
+    </div>
+
+    <!-- APPEARANCE -->
+    <div class="ap" id="pg-look">
+      <h1>🎨 Appearance</h1>
+      <div class="sec">
+        <h3>Colour Theme</h3>
+        <div id="thgrid" style="display:grid;grid-template-columns:repeat(auto-fill,minmax(90px,1fr));gap:8px"></div>
+        <div class="ok" id="th-ok"></div>
+      </div>
+      <div class="sec">
+        <h3>Custom CSS for Everyone</h3>
+        <textarea class="fi" id="ccss" rows="5" placeholder="body { background: red; }"></textarea>
+        <div style="display:flex;gap:7px">
+          <button class="sb p" style="flex:1" onclick="savCSS()">Apply</button>
+          <button class="sb d" onclick="clrCSS()">Clear</button>
+        </div>
+        <div class="ok" id="css-ok"></div>
+      </div>
+    </div>
+
+    <!-- BACKUP -->
+    <div class="ap" id="pg-bak">
+      <h1>💾 Backup & Restore</h1>
+      <div class="sec">
+        <h3>Download Backup</h3>
+        <button class="sb s" style="width:100%" onclick="dlBak()">⬇️ Download Full Backup</button>
+        <div style="font-size:11px;color:var(--m)">Last: <span id="lb-t">never</span></div>
+      </div>
+      <div class="sec">
+        <h3>Restore</h3>
+        <input type="file" id="rf" accept=".json" style="font-size:12px;color:var(--m);background:var(--bg);border:1.5px solid var(--b);border-radius:8px;padding:8px;width:100%"/>
+        <button class="sb w" style="width:100%;margin-top:4px" onclick="restBak()">⬆️ Restore</button>
+        <div class="ok" id="bak-ok"></div>
+      </div>
+      <div class="sec">
+        <h3>Export Users CSV</h3>
+        <button class="sb p" style="width:100%" onclick="expCSV()">📊 Export CSV</button>
+      </div>
+    </div>
+
+    <!-- DANGER -->
+    <div class="ap" id="pg-danger">
+      <h1>⚠️ Danger Zone</h1>
+      <p class="desc">Irreversible actions. Back up first.</p>
+      <div class="sec" style="border-color:rgba(255,79,79,.3)">
+        <h3>Reset Site State</h3>
+        <button class="sb d" style="width:100%" onclick="sReset()">Reset</button>
+        <div class="ok" id="rst-ok"></div>
+      </div>
+      <div class="sec" style="border-color:rgba(255,79,79,.3)">
+        <h3>Ban Everyone</h3>
+        <button class="sb d" style="width:100%" onclick="banEv()">🚫 Ban All</button>
+        <div class="ok" id="bev-ok"></div>
+      </div>
+      <div class="sec" style="border-color:rgba(255,79,79,.3)">
+        <h3>Delete All Users</h3>
+        <button class="sb d" style="width:100%" onclick="delEv()">🗑 Delete All</button>
+        <div class="ok" id="dev-ok"></div>
+      </div>
+    </div>
+
+  </div>
+</div>
+
+<!-- FAB -->
+<button id="fab" onclick="oadm()">⚙️</button>
+
+<!-- KICK SCREEN -->
+<div class="ov hidden" id="kick-sc">
+  <div class="box" style="text-align:center;gap:18px;border-color:rgba(255,215,79,.3)">
+    <div style="font-size:46px">⏱</div>
+    <div class="otitle" style="background:linear-gradient(135deg,var(--y),var(--a2));-webkit-background-clip:text;background-clip:text">Site Temporarily Closed</div>
+    <p id="kick-msg-d" style="font-size:13px;color:var(--m)">Be back soon!</p>
+    <p style="font-size:22px;font-weight:800;color:var(--y)" id="kick-cd">—</p>
+    <button class="bb g" onclick="location.reload()">↻ Refresh</button>
+  </div>
+</div>
+
+<!-- SIDEBAR -->
+<div id="sb">
+  <div class="slogo">🌐</div>
+  <button class="stb active" data-t="B" onclick="gt('B')" title="Browser"><span class="ic">🌐</span>Web</button>
+  <button class="stb" data-t="G" onclick="gt('G')" title="Games"><span class="ic">🎮</span>Games</button>
+  <button class="stb" data-t="A" onclick="gt('A')" title="AI"><span class="ic">🤖</span>AI</button>
+</div>
+
+<!-- MAIN -->
+<div id="main">
+
+  <!-- BROWSER -->
+  <div class="pn active" id="pB">
+    <div id="bbar">
+      <button class="nb" id="bk" disabled>&#8592;</button>
+      <button class="nb" id="fw" disabled>&#8594;</button>
+      <button class="nb" id="rl">&#8635;</button>
+      <button class="hp" id="hm">⌂ Home</button>
+      <div id="uw">
+        <span id="lk" style="font-size:10px;color:var(--a3)">🔒</span>
+        <input id="ub" type="text" placeholder="Search Bing or enter a URL…" autocomplete="off" spellcheck="false"/>
+      </div>
+      <button id="go">GO</button>
+    </div>
+    <div id="bcon">
+      <div id="lb"></div>
+      <div id="bhm">
+        <div class="hsw">
+          <input class="hsi" id="hsi" placeholder="Search Bing or enter a URL…" autocomplete="off" onkeydown="if(event.key==='Enter')nav(this.value)"/>
+          <button class="hsb" onclick="nav(document.getElementById('hsi').value)">Search</button>
+        </div>
+        <div class="qls">
+          <div class="ql" onclick="nav('https://www.bing.com')">🔍 Bing</div>
+          <div class="ql" onclick="navYT()">▶️ YouTube</div>
+          <div class="ql" onclick="navSP()">🎵 Spotify</div>
+          <div class="ql" onclick="navTT()">🎵 TikTok</div>
+          <div class="ql" onclick="nav('https://www.euphorialearning.academy/')">🎓 Euphoria</div>
+          <div class="ql" onclick="nav('https://www.wikipedia.org')">📖 Wikipedia</div>
+          <div class="ql" onclick="nav('https://www.khanacademy.org')">📐 Khan Academy</div>
+          <div class="ql" onclick="nav('https://www.desmos.com/calculator')">📈 Desmos</div>
+          <div class="ql" onclick="nav('https://translate.google.com')">🌐 Translate</div>
+        </div>
+      </div>
+      <iframe id="sf" sandbox="allow-scripts allow-forms allow-same-origin allow-popups allow-top-navigation allow-top-navigation-by-user-activation" allow="fullscreen *"></iframe>
+    </div>
+  </div>
+
+  <!-- GAMES -->
+  <div class="pn" id="pG">
+    <div id="gbar">
+      <input id="gs" placeholder="Search games…" oninput="fg(this.value)"/>
+      <button class="bk" id="gbk" style="display:none" onclick="gbk()">← Games</button>
+    </div>
+    <div id="gcon">
+      <div id="gg"></div>
+      <div id="gfw">
+        <div id="gfb"><span id="gft"></span><a class="otb" id="gotb" href="#" target="_blank" rel="noopener">Open in Tab ↗</a></div>
+        <iframe id="gf" allowfullscreen allow="fullscreen *"></iframe>
+      </div>
+    </div>
+  </div>
+
+  <!-- AI -->
+  <div class="pn" id="pA">
+    <div id="aih"><p>Paste up to 10,000 characters · Summarize · Ask questions · Scan a URL</p></div>
+    <div id="aib">
+      <div id="ail">
+        <label>Your Text</label>
+        <textarea id="ti" placeholder="Paste any text here…" maxlength="10000" oninput="ucc()"></textarea>
+        <div id="cc">0 / 10,000</div>
+        <div class="ar">
+          <button class="ab p" id="smb" onclick="doSum()">✨ Summarize</button>
+          <button class="ab s" onclick="clrAI()">Clear</button>
+        </div>
+        <div style="border-top:1.5px solid var(--b);padding-top:10px;display:flex;flex-direction:column;gap:7px">
+          <label>Scan a URL</label>
+          <div style="display:flex;gap:7px">
+            <input class="fi" id="scan-url" placeholder="Paste any URL to scan…" style="flex:1"/>
+            <button class="ab p" style="flex:none;padding:9px 13px" onclick="scanURL()">Scan</button>
+          </div>
+        </div>
+      </div>
+      <div id="air">
+        <div id="aqw">
+          <input id="aq" placeholder="Ask a question about your text…" onkeydown="if(event.key==='Enter')doAsk()"/>
+          <button id="askb" onclick="doAsk()">Ask →</button>
+        </div>
+        <div id="ao"></div>
+      </div>
+    </div>
+  </div>
+
+</div>
+
+<style id="ccs"></style>
+
+<script>
+'use strict';
+const SB_URL='https://apcvbrceuuasaprhgekq.supabase.co';
+const SB_KEY='eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImFwY3ZicmNldXVhc2FwcmhnZWtxIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzQ4MzMyMTQsImV4cCI6MjA5MDQwOTIxNH0.PBks3s5aUsWO5NlapTvsODaSYe3hgFLFvMKaujcSm8o';
+const sb=supabase.createClient(SB_URL,SB_KEY);
+const $=id=>document.getElementById(id);
+const show=id=>{const e=$(id);if(e)e.classList.remove('hidden');};
+const hide=id=>{const e=$(id);if(e)e.classList.add('hidden');};
+function msg(id,t,err=false){const e=$(id);if(!e)return;e.textContent=t;e.style.color=err?'var(--r)':'var(--a3)';if(t)setTimeout(()=>e.textContent='',4000);}
+function log(label,data){console.log('[HUB]',label,data);}
+
+// DB
+async function dbG(t,c,v){
+  const{data,error}=await sb.from(t).select('*').eq(c,v).maybeSingle();
+  if(error)log('dbGet error',error);
+  return data;
+}
+async function dbA(t,f){
+  let q=sb.from(t).select('*');
+  try{q=q.order('joined_at',{ascending:false});}catch(e){}
+  if(f&&f!=='all')q=q.eq('status',f);
+  const{data,error}=await q;
+  if(error)log('dbAll error',error);
+  return data||[];
+}
+async function dbU(t,o,c){
+  const{error}=await sb.from(t).upsert(o,{onConflict:c});
+  if(error)log('dbUpsert error',error);
+  return !error;
+}
+async function dbP(t,c,v,p){
+  const{error}=await sb.from(t).update(p).eq(c,v);
+  if(error)log('dbPatch error',error);
+  return !error;
+}
+async function dbD(t,c,v){
+  const{error}=await sb.from(t).delete().eq(c,v);
+  if(error)log('dbDel error',error);
+  return !error;
+}
+
+// FEATURES
+const FEATS=['Browser','Games','AI Summarizer','Spotify','TikTok','YouTube'];
+let disFeats=[];
+function isFeatOn(f){return!disFeats.includes(f);}
+function savFeats(){return dbU('settings',{id:'main',disabled_features:JSON.stringify(disFeats)},'id');}
+function renderFTogs(){
+  const g=$('ftogs');if(!g)return;
+  g.innerHTML='';
+  FEATS.forEach(f=>{
+    const on=isFeatOn(f);
+    const d=document.createElement('div');d.className='ftog';
+    d.innerHTML=`<span>${f}</span><button class="tog ${on?'on':'off'}" onclick="togFeat('${f}')"></button>`;
+    g.appendChild(d);
+  });
+}
+async function togFeat(f){
+  if(disFeats.includes(f))disFeats=disFeats.filter(x=>x!==f);
+  else disFeats.push(f);
+  await savFeats();
+  renderFTogs();
+  msg('feat-ok','✅ Updated!');
+}
+
+// THEMES
+const THS=[{n:'Navy',a:'#4f7fff',a2:'#ff4fa0',a3:'#4fffc8'},{n:'Purple',a:'#a855f7',a2:'#f472b6',a3:'#4ade80'},{n:'Sunset',a:'#f97316',a2:'#ec4899',a3:'#fbbf24'},{n:'Forest',a:'#22c55e',a2:'#84cc16',a3:'#06b6d4'},{n:'Ocean',a:'#06b6d4',a2:'#3b82f6',a3:'#8b5cf6'},{n:'Mono',a:'#e2e8f0',a2:'#94a3b8',a3:'#64748b'}];
+function rThs(){
+  const g=$('thgrid');if(!g)return;
+  g.innerHTML=THS.map((t,i)=>`<div style="background:var(--s);border:1.5px solid var(--b);border-radius:9px;padding:9px;cursor:pointer;text-align:center;font-size:11px;font-weight:700;color:var(--t);transition:all .15s" onclick="aTh(${i})"><div style="width:24px;height:24px;border-radius:50%;background:${t.a};margin:0 auto 5px"></div>${t.n}</div>`).join('');
+}
+async function aTh(i){
+  const t=THS[i];
+  document.documentElement.style.setProperty('--a',t.a);
+  document.documentElement.style.setProperty('--a2',t.a2);
+  document.documentElement.style.setProperty('--a3',t.a3);
+  await dbU('settings',{id:'main',theme:JSON.stringify(t)},'id');
+  msg('th-ok','✅ Theme applied for everyone!');
+}
+async function ldTh(){
+  const s=await dbG('settings','id','main');
+  if(s?.theme){try{const t=JSON.parse(s.theme);document.documentElement.style.setProperty('--a',t.a);document.documentElement.style.setProperty('--a2',t.a2);document.documentElement.style.setProperty('--a3',t.a3);}catch(e){}}
+}
+
+// BOOT
+let ME=null,ADM=false;
+async function boot(){
+  $('smsg').textContent='Connecting…';
+  try{
+    await ldTh();
+    const s=await dbG('settings','id','main');
+    log('Settings loaded',s);
+
+    // check kick
+    if(s?.kick_until){
+      const kt=parseInt(s.kick_until)||0;
+      if(kt>Date.now()&&!ADM){
+        fadeSp();
+        $('kick-msg-d').textContent=s.kick_message||'Be back soon!';
+        show('kick-sc');
+        startKickCD(kt);
+        return;
+      }
+    }
+
+    if(s?.site_enabled===false){fadeSp();show('dis');if(s.maint_msg)$('dis-msg').textContent=s.maint_msg;return;}
+    if(s?.announcement)sAnn(s.announcement);
+    if(s?.custom_css)$('ccs').textContent=s.custom_css;
+    if(s?.disabled_features){try{disFeats=JSON.parse(s.disabled_features)||[];}catch(e){}}
+
+    // realtime
+    sb.channel('settings-ch').on('postgres_changes',{event:'*',schema:'public',table:'settings'},p=>{
+      const d=p.new;
+      if(!d)return;
+      if(d.site_enabled===false&&!ADM){location.reload();return;}
+      if(d.kick_until&&parseInt(d.kick_until)>Date.now()&&!ADM){location.reload();return;}
+      if(d.announcement)sAnn(d.announcement);else clsAnn();
+      if(d.custom_css!==undefined)$('ccs').textContent=d.custom_css||'';
+      if(d.alert_msg&&d.alert_msg!==''){alert('📢 Message:\n\n'+d.alert_msg);}
+      if(d.disabled_features){try{disFeats=JSON.parse(d.disabled_features)||[];}catch(e){}}
+      if(d.theme){try{const t=JSON.parse(d.theme);document.documentElement.style.setProperty('--a',t.a);document.documentElement.style.setProperty('--a2',t.a2);document.documentElement.style.setProperty('--a3',t.a3);}catch(e){}}
+    }).subscribe((status)=>{log('Realtime status',status);});
+
+    fadeSp();show('auth');
+  }catch(e){
+    log('Boot error',e);
+    $('smsg').textContent='Connection failed. Check console for details.';
+  }
+}
+function fadeSp(){$('splash').classList.add('fade');setTimeout(()=>$('splash').classList.add('gone'),400);}
+boot();
+
+function sAnn(t){$('ann-t').textContent='📢 '+t;$('ann').style.display='block';}
+function clsAnn(){$('ann').style.display='none';}
+$('ann-x').onclick=clsAnn;
+
+// KICK COUNTDOWN
+function startKickCD(until){
+  const el=$('kick-cd');
+  function tick(){
+    const rem=Math.max(0,Math.ceil((until-Date.now())/1000));
+    const m=Math.floor(rem/60),s=rem%60;
+    el.textContent=m+':'+(s<10?'0':'')+s;
+    if(rem>0)setTimeout(tick,1000);else location.reload();
+  }
+  tick();
+}
+
+// AUTH
+let MODE='in';
+function am(m){
+  MODE=m;
+  $('auth-t').textContent=m==='in'?'Sign In':'Sign Up';
+  $('t-in').classList.toggle('active',m==='in');
+  $('t-up').classList.toggle('active',m==='up');
+  $('sn').style.display=m==='up'?'block':'none';
+  $('se').style.display=m==='up'?'block':'none';
+  $('ae').textContent='';
+}
+$('auth-btn').addEventListener('click',e=>doAuth(e.shiftKey));
+async function doAuth(shift=false){
+  const user=$('su').value.trim().toLowerCase();
+  const pw=$('sp').value.trim();
+  const err=$('ae');
+  err.textContent='';
+  if(!user||!pw){err.textContent='Fill in all fields.';return;}
+
+  const s=await dbG('settings','id','main');
+  const aPw=s?.admin_password||'admin999';
+  const uPw=s?.user_password||'euphoria123';
+  const suOn=s?.signups_open!==false;
+
+  if(shift){
+    if(pw===aPw){
+      ADM=true;ME={username:'admin',name:'Admin'};
+      hide('auth');
+      $('fab').style.display='flex';
+    }else{err.textContent='Wrong admin password.';}
+    return;
+  }
+
+  if(MODE==='up'){
+    if(!suOn){err.textContent='Signups are currently closed.';return;}
+    const name=$('sn').value.trim();
+    if(!name){err.textContent='Enter your name.';return;}
+    if(pw!==uPw){err.textContent='Wrong site password.';return;}
+    const ex=await dbG('users','username',user);
+    if(ex){err.textContent='Username already taken.';return;}
+    const ok=await dbU('users',{username:user,name,password:pw,status:'pending',email:$('se').value.trim(),joined_at:new Date().toISOString()},'username');
+    if(ok){hide('auth');show('pend');}
+    else{err.textContent='Signup failed. Try again.';}
+    return;
+  }
+
+  const u=await dbG('users','username',user);
+  if(!u){err.textContent='Account not found.';return;}
+  if(u.password!==pw){err.textContent='Wrong password.';return;}
+  if(u.status==='banned'){
+    hide('auth');show('ban');
+    if(u.ban_reason){$('ban-reason').textContent='Reason: '+u.ban_reason;$('ban-reason').style.display='block';}
+    return;
+  }
+  if(u.status==='pending'){hide('auth');show('pend');return;}
+  ME=u;hide('auth');
+}
+
+// ADMIN
+async function oadm(){
+  if(!ADM)return;
+  $('adm').classList.remove('hidden');
+  ap('dash');
+  ldStats();lu('all');rThs();rTogs();renderFTogs();
+}
+function cadm(){hide('adm');}
+function lout(){ADM=false;ME=null;$('fab').style.display='none';hide('adm');show('auth');}
+function ap(n){
+  document.querySelectorAll('.ap').forEach(p=>p.classList.remove('active'));
+  document.querySelectorAll('.an').forEach(b=>b.classList.remove('active'));
+  $('pg-'+n).classList.add('active');
+  document.querySelector(`.an[onclick="ap('${n}')"]`).classList.add('active');
+}
+
+async function ldStats(){
+  const u=await dbA('users');
+  $('st0').textContent=u.length;
+  $('st1').textContent=u.filter(x=>x.status==='active').length;
+  $('st2').textContent=u.filter(x=>x.status==='pending').length;
+  $('st3').textContent=u.filter(x=>x.status==='banned').length;
+}
+
+async function rTogs(){
+  const s=await dbG('settings','id','main');
+  const on=s?.site_enabled!==false;
+  const su=s?.signups_open!==false;
+  [$('stog'),$('stog2')].forEach(t=>{if(t)t.className='tog '+(on?'on':'off');});
+  [$('slbl'),$('slbl2')].forEach(l=>{if(l)l.textContent=on?'Site ENABLED ✅':'Site DISABLED 🔴';});
+  const st=$('sutog');if(st)st.className='tog '+(su?'on':'off');
+  const sl=$('sulbl');if(sl)sl.textContent=su?'Signups OPEN':'Signups CLOSED';
+}
+
+async function togSite(){
+  const s=await dbG('settings','id','main');
+  const cur=s?.site_enabled!==false;
+  await dbU('settings',{id:'main',site_enabled:!cur},'id');
+  rTogs();
+}
+async function togSu(){
+  const s=await dbG('settings','id','main');
+  const cur=s?.signups_open!==false;
+  await dbU('settings',{id:'main',signups_open:!cur},'id');
+  rTogs();
+}
+
+// USERS
+let AUSERS=[];
+async function lu(f='all'){
+  const l=$('ulist');l.innerHTML='<div style="color:var(--m);font-size:12px">Loading…</div>';
+  AUSERS=await dbA('users',f);
+  rusr(AUSERS);
+}
+function rusr(list){
+  const l=$('ulist');l.innerHTML='';
+  if(!list.length){l.innerHTML='<div style="color:var(--m);font-size:12px">No users found.</div>';return;}
+  list.forEach(u=>{
+    const r=document.createElement('div');r.className='ur';
+    let bt='';
+    if(u.status==='pending')bt=`<button class="ub ap" onclick="ss('${u.username}','active')">Approve</button><button class="ub dy" onclick="ss('${u.username}','banned')">Deny</button>`;
+    else if(u.status==='active')bt=`<button class="ub bn" onclick="ss('${u.username}','banned')">Ban</button>`;
+    else if(u.status==='banned')bt=`<button class="ub ub2" onclick="ss('${u.username}','active')">Unban</button>`;
+    bt+=`<button class="ub dl" onclick="du('${u.username}')">🗑</button>`;
+    r.innerHTML=`<div class="un">${u.name||u.username} <span style="color:var(--m);font-size:10px">@${u.username}</span></div><span class="ubg ${u.status}">${u.status}</span><div class="ubs">${bt}</div>`;
+    l.appendChild(r);
+  });
+}
+function fusr(q){const s=q.toLowerCase();rusr(AUSERS.filter(u=>(u.name||'').toLowerCase().includes(s)||u.username.toLowerCase().includes(s)));}
+async function ss(u,s){await dbP('users','username',u,{status:s});lu('all');ldStats();}
+async function du(u){if(!confirm('Delete @'+u+'?'))return;await dbD('users','username',u);lu('all');ldStats();}
+async function appAll(){const u=await dbA('users','pending');for(const x of u)await dbP('users','username',x.username,{status:'active'});msg('app-ok','✅ Approved '+u.length+' users!');lu('all');ldStats();}
+async function banWR(){
+  const u=$('ban-u').value.trim().toLowerCase();
+  const r=$('ban-r').value.trim();
+  if(!u){msg('ban-ok','Enter a username',true);return;}
+  await dbP('users','username',u,{status:'banned',ban_reason:r});
+  msg('ban-ok','✅ Banned @'+u+(r?' — reason saved':''));
+  $('ban-u').value='';$('ban-r').value='';
+  lu('all');
+}
+async function banEv(){if(!confirm('Ban ALL?'))return;const u=await dbA('users');for(const x of u)await dbP('users','username',x.username,{status:'banned'});msg('bev-ok','🚫 Banned everyone');lu('all');}
+async function delEv(){if(!confirm('DELETE ALL USERS?'))return;const u=await dbA('users');for(const x of u)await dbD('users','username',x.username);msg('dev-ok','🗑 Deleted all');lu('all');ldStats();}
+
+// BROADCAST
+async function sndAnn(){const t=$('ann-in').value.trim();if(!t){msg('ann-ok','Type something',true);return;}const ok=await dbU('settings',{id:'main',announcement:t},'id');msg('ann-ok',ok?'✅ Sent!':'❌ Failed — check Supabase RLS',!ok);}
+async function clrAnn(){await dbU('settings',{id:'main',announcement:''},'id');msg('ann-ok','✅ Cleared');}
+async function sndAlrt(){const t=$('alrt-in').value.trim();if(!t){msg('alrt-ok','Type something',true);return;}const ok=await dbU('settings',{id:'main',alert_msg:t},'id');setTimeout(()=>dbU('settings',{id:'main',alert_msg:''},'id'),5000);msg('alrt-ok',ok?'✅ Alert sent!':'❌ Failed',!ok);$('alrt-in').value='';}
+async function kickAll(){
+  const mins=parseInt($('kick-min').value)||0;
+  const km=$('kick-msg').value.trim()||'Be back soon!';
+  if(!mins){msg('kick-ok','Enter minutes',true);return;}
+  const until=Date.now()+(mins*60000);
+  const ok=await dbU('settings',{id:'main',kick_until:until,kick_message:km},'id');
+  msg('kick-ok',ok?'✅ Everyone kicked for '+mins+' min':'❌ Failed',!ok);
+  $('kick-min').value='';$('kick-msg').value='';
+}
+
+// ACCESS
+async function chUPw(){const v=$('nup').value.trim();if(!v){msg('upw-ok','Enter a password',true);return;}const ok=await dbU('settings',{id:'main',user_password:v},'id');$('nup').value='';msg('upw-ok',ok?'✅ Updated for everyone!':'❌ Failed',!ok);}
+async function chAPw(){const v=$('nap').value.trim();if(!v){msg('apw-ok','Enter a password',true);return;}const ok=await dbU('settings',{id:'main',admin_password:v},'id');$('nap').value='';msg('apw-ok',ok?'✅ Updated!':'❌ Failed',!ok);}
+
+// APPEARANCE
+async function savCSS(){const c=$('ccss').value;$('ccs').textContent=c;const ok=await dbU('settings',{id:'main',custom_css:c},'id');msg('css-ok',ok?'✅ Applied!':'❌ Failed',!ok);}
+async function clrCSS(){$('ccs').textContent='';$('ccss').value='';const ok=await dbU('settings',{id:'main',custom_css:''},'id');msg('css-ok',ok?'✅ Cleared':'❌ Failed',!ok);}
+
+// SITE RESET
+async function sReset(){if(!confirm('Reset site state?'))return;await dbU('settings',{id:'main',announcement:'',global_image:'',custom_css:'',alert_msg:'',kick_until:0,kick_message:''},'id');$('ccs').textContent='';msg('rst-ok','✅ Reset!');}
+
+// BACKUP
+async function dlBak(){
+  const u=await dbA('users');const s=await dbG('settings','id','main');
+  const b={version:'1.0',date:new Date().toISOString(),users:u,settings:s};
+  const bl=new Blob([JSON.stringify(b,null,2)],{type:'application/json'});
+  const url=URL.createObjectURL(bl);
+  const a=document.createElement('a');a.href=url;a.download='hub-backup-'+new Date().toISOString().split('T')[0]+'.json';a.click();
+  URL.revokeObjectURL(url);
+  const t=new Date().toLocaleString();localStorage.setItem('hub_bak_t',t);
+  const el=$('lb-t');if(el)el.textContent=t;
+  msg('bak-ok','✅ Downloaded!');
+}
+async function restBak(){
+  const fi=$('rf');if(!fi.files.length){msg('bak-ok','Select a file',true);return;}
+  const rd=new FileReader();
+  rd.onload=async e=>{
+    try{
+      const b=JSON.parse(e.target.result);
+      if(!b.users||!b.settings){msg('bak-ok','❌ Invalid file',true);return;}
+      await dbU('settings',b.settings,'id');
+      for(const u of b.users)await dbU('users',u,'username');
+      msg('bak-ok','✅ Restored '+b.users.length+' users!');
+      lu('all');rTogs();
+    }catch(err){msg('bak-ok','❌ Failed',true);}
+  };
+  rd.readAsText(fi.files[0]);
+}
+async function expCSV(){
+  const u=await dbA('users');
+  const rows=['username,name,status,email,joined_at',...u.map(x=>`${x.username},${x.name||''},${x.status},${x.email||''},${x.joined_at||''}`)];
+  const bl=new Blob([rows.join('\n')],{type:'text/csv'});
+  const url=URL.createObjectURL(bl);
+  const a=document.createElement('a');a.href=url;a.download='users.csv';a.click();
+  URL.revokeObjectURL(url);
+}
+
+// TABS
+function gt(n){
+  document.querySelectorAll('.pn').forEach(p=>p.classList.remove('active'));
+  document.querySelectorAll('.stb').forEach(b=>b.classList.remove('active'));
+  $('p'+n).classList.add('active');
+  document.querySelector(`[data-t="${n}"]`).classList.add('active');
+}
+
+// BROWSER
+const FR=$('sf'),HM=$('bhm'),LB=$('lb'),LK=$('lk'),UB=$('ub');
+let BH=[],BI=-1;
+function ld(){LB.style.opacity='1';LB.style.width='70%';}
+function uld(){LB.style.width='100%';setTimeout(()=>{LB.style.opacity='0';LB.style.width='0%';},400);}
+function res(s){
+  s=s.trim();if(!s)return null;
+  if(/^https?:\/\//i.test(s))return s;
+  if(/^[a-z0-9-]+\.[a-z]{2,}/i.test(s)&&!s.includes(' '))return 'https://'+s;
+  return 'https://www.bing.com/search?q='+encodeURIComponent(s);
+}
+function nav(url,push=true){
+  const r=res(url);if(!r)return;
+  ld();UB.value=r;LK.textContent=r.startsWith('https')?'🔒':'⚠️';
+  HM.style.display='none';FR.style.display='block';FR.src=r;
+  if(push){BH=BH.slice(0,BI+1);BH.push(r);BI=BH.length-1;}
+  nb();
+}
+function nb(){$('bk').disabled=BI<=0;$('fw').disabled=BI>=BH.length-1;}
+FR.addEventListener('load',()=>{uld();try{const l=FR.contentWindow.location.href;if(l&&l!=='about:blank'){UB.value=l;LK.textContent=l.startsWith('https')?'🔒':'⚠️';}}catch(e){}});
+$('go').onclick=()=>nav(UB.value);
+UB.onkeydown=e=>{if(e.key==='Enter')nav(UB.value);};
+$('bk').onclick=()=>{if(BI>0){BI--;nav(BH[BI],false);}};
+$('fw').onclick=()=>{if(BI<BH.length-1){BI++;nav(BH[BI],false);}};
+$('rl').onclick=()=>{if(UB.value)nav(UB.value,false);};
+$('hm').onclick=()=>{FR.src='about:blank';FR.style.display='none';HM.style.display='flex';UB.value='';};
+
+// YouTube, Spotify, TikTok special handlers
+function navYT(){
+  HM.style.display='none';FR.style.display='block';
+  FR.src='https://www.youtube.com/embed?listType=search&list=trending';
+  UB.value='youtube.com';
+  // YouTube blocks direct embed so open in tab
+  window.open('https://www.youtube.com','_blank');
+}
+function navSP(){
+  HM.style.display='none';FR.style.display='block';
+  FR.src='https://open.spotify.com/embed/playlist/37i9dQZF1DXcBWIGoYBM5M';
+  UB.value='open.spotify.com';
+}
+function navTT(){
+  window.open('https://www.tiktok.com','_blank');
+}
+
+// GAMES
+const GAMES=[
+  {n:"Geometry Dash",e:"🔺",t:"Platformer",u:"https://geometrydash.io/"},
+  {n:"Slope",e:"🔵",t:"Arcade",u:"https://slope-game.github.io/"},
+  {n:"1v1.LOL",e:"🏗️",t:"Battle",u:"https://1v1.lol/"},
+  {n:"Krunker.io",e:"🎯",t:"Shooter",u:"https://krunker.io/"},
+  {n:"Cookie Clicker",e:"🍪",t:"Idle",u:"https://orteil.dashnet.org/cookieclicker/"},
+  {n:"Moto X3M",e:"🏍️",t:"Racing",u:"https://moto-x3m.github.io/"},
+  {n:"Retro Bowl",e:"🏈",t:"Sports",u:"https://retrobowl.me/"},
+  {n:"Smash Karts",e:"🏎️",t:"Racing",u:"https://smashkarts.io/"},
+  {n:"Shell Shockers",e:"🥚",t:"Shooter",u:"https://shellshock.io/"},
+  {n:"2048",e:"🔢",t:"Puzzle",u:"https://play2048.co/"},
+  {n:"Sudoku",e:"🔲",t:"Puzzle",u:"https://sudoku.com/"},
+  {n:"Flappy Bird",e:"🐦",t:"Arcade",u:"https://flappybird.io/"},
+  {n:"Paper.io",e:"📄",t:"IO Game",u:"https://paper-io.com/"},
+  {n:"Drift Boss",e:"🚗",t:"Racing",u:"https://www.crazygames.com/game/drift-boss"},
+  {n:"Agar.io",e:"🫧",t:"IO Game",u:"https://agar.io/"},
+  {n:"Slither.io",e:"🐛",t:"IO Game",u:"https://slither.io/"},
+];
+function rg(list){const g=$('gg');g.innerHTML='';list.forEach(gm=>{const c=document.createElement('div');c.className='gc';c.innerHTML=`<div class="gt">${gm.e}</div><div class="gi"><div class="gn">${gm.n}</div><div class="gtg">${gm.t}</div></div>`;c.onclick=()=>lg(gm);g.appendChild(c);});}
+function fg(q){const s=q.toLowerCase();rg(GAMES.filter(g=>g.n.toLowerCase().includes(s)||g.t.toLowerCase().includes(s)));}
+function lg(gm){$('gg').style.display='none';const fw=$('gfw');fw.style.display='flex';fw.style.height='100%';$('gf').src=gm.u;$('gft').textContent=gm.n;$('gotb').href=gm.u;$('gbk').style.display='block';}
+function gbk(){$('gf').src='about:blank';$('gfw').style.display='none';$('gg').style.display='grid';$('gbk').style.display='none';}
+rg(GAMES);
+
+// AI
+function ucc(){const v=$('ti').value.length;$('cc').textContent=v.toLocaleString()+' / 10,000';$('cc').classList.toggle('over',v>9500);}
+function clrAI(){$('ti').value='';$('ao').innerHTML='';$('aq').value='';ucc();}
+function bub(l,h,t){const o=$('ao');const b=document.createElement('div');b.className='bub '+t;b.innerHTML=`<div class="bl">${l}</div><div>${h}</div>`;o.appendChild(b);o.scrollTop=o.scrollHeight;}
+function thk(){const o=$('ao');const b=document.createElement('div');b.className='bub a';b.id='thk';b.innerHTML=`<div class="bl">AI</div><div class="dots"><div class="dot"></div><div class="dot"></div><div class="dot"></div></div>`;o.appendChild(b);o.scrollTop=o.scrollHeight;}
+function uthk(){const b=$('thk');if(b)b.remove();}
+
+async function callAI(sys,msg){
+  const r=await fetch('https://api.anthropic.com/v1/messages',{
+    method:'POST',
+    headers:{'Content-Type':'application/json','anthropic-dangerous-direct-browser-calls':'true'},
+    body:JSON.stringify({model:'claude-sonnet-4-20250514',max_tokens:1024,system:sys,messages:[{role:'user',content:msg}]})
+  });
+  if(!r.ok){const e=await r.json();throw new Error(e.error?.message||'API error '+r.status);}
+  const d=await r.json();
+  return d.content.filter(c=>c.type==='text').map(c=>c.text).join('\n');
+}
+
+async function doSum(){
+  const txt=$('ti').value.trim();
+  if(!txt){alert('Paste some text first!');return;}
+  const btn=$('smb');btn.disabled=true;btn.textContent='Working…';
+  thk();
+  try{
+    const r=await callAI('You are a clear concise summarizer. Use bullet points for key points then a 2–3 sentence overall summary. Plain text only.','Summarize this:\n\n'+txt);
+    uthk();bub('✨ Summary',r.replace(/\n/g,'<br>'),'a');
+  }catch(e){
+    uthk();bub('Error','AI error: '+e.message,'e');
+    log('AI error',e);
+  }
+  btn.disabled=false;btn.textContent='✨ Summarize';
+}
+
+async function doAsk(){
+  const txt=$('ti').value.trim();const q=$('aq').value.trim();
+  if(!txt){alert('Paste some text first!');return;}
+  if(!q){alert('Enter a question!');return;}
+  const btn=$('askb');btn.disabled=true;
+  bub('❓ Question',q,'q');$('aq').value='';thk();
+  try{
+    const r=await callAI('Answer questions based only on the provided text. If not in the text, say so clearly.','Text:\n'+txt+'\n\nQuestion: '+q);
+    uthk();bub('🤖 Answer',r.replace(/\n/g,'<br>'),'a');
+  }catch(e){
+    uthk();bub('Error','AI error: '+e.message,'e');
+    log('AI error',e);
+  }
+  btn.disabled=false;
+}
+
+async function scanURL(){
+  const url=$('scan-url').value.trim();
+  if(!url){alert('Paste a URL first!');return;}
+  bub('🔍 Scanning',url,'q');
+  thk();
+  try{
+    const r=await callAI(
+      'You are a web page analyzer. The user will give you a URL. Summarize what that website or page is about, what information it contains, who it is for, and any key facts. Be thorough.',
+      'Analyze this URL and tell me everything about what this page/site contains and what it is about: '+url
+    );
+    uthk();bub('📋 Scan Results',r.replace(/\n/g,'<br>'),'a');
+    $('scan-url').value='';
+  }catch(e){
+    uthk();bub('Error','Scan failed: '+e.message,'e');
+  }
+}
+</script>
+</body>
+</html>
