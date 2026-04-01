@@ -9,114 +9,138 @@
 <style>
 *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
 :root{
-  --bg:#07091a;--s:#0d1130;--card:#0f1435;--card2:#141b45;
+  --bg:#07091a;--s:#0d1130;--card:#0f1435;--c2:#141b45;
   --b:#1e2650;--b2:#2a3580;
   --t:#e8ecff;--m:#5a6490;
   --a:#4f7fff;--a2:#ff4fa0;--a3:#4fffc8;
   --y:#ffd74f;--r:#ff4f4f;--g:#4fff90;
 }
 html,body{height:100%;overflow:hidden;background:var(--bg);color:var(--t);font-family:'Plus Jakarta Sans',sans-serif}
+
 /* SPLASH */
-#splash{position:fixed;inset:0;z-index:9999;background:var(--bg);display:flex;flex-direction:column;align-items:center;justify-content:center;gap:14px;transition:opacity .4s}
-#splash.fade{opacity:0;pointer-events:none}
-#splash.gone{display:none}
-.spin{width:36px;height:36px;border:3px solid var(--b2);border-top-color:var(--a);border-radius:50%;animation:spin .7s linear infinite}
-@keyframes spin{to{transform:rotate(360deg)}}
-.smsg{font-size:13px;color:var(--m);font-weight:500}
+#spl{position:fixed;inset:0;z-index:9999;background:var(--bg);display:flex;flex-direction:column;align-items:center;justify-content:center;gap:14px;transition:opacity .4s}
+#spl.fade{opacity:0;pointer-events:none}
+#spl.gone{display:none}
+.spin{width:36px;height:36px;border:3px solid var(--b2);border-top-color:var(--a);border-radius:50%;animation:sp .7s linear infinite}
+@keyframes sp{to{transform:rotate(360deg)}}
+.sm{font-size:13px;color:var(--m);font-weight:500}
+
 /* OVERLAYS */
 .ov{position:fixed;inset:0;z-index:800;display:flex;align-items:center;justify-content:center;background:rgba(7,9,26,.96);backdrop-filter:blur(8px)}
 .ov.hidden{display:none}
-.box{background:var(--card);border:1.5px solid var(--b2);border-radius:18px;padding:28px 32px;width:min(400px,92vw);display:flex;flex-direction:column;gap:13px;box-shadow:0 24px 64px rgba(0,0,0,.7)}
-.otitle{font-size:20px;font-weight:800;text-align:center;background:linear-gradient(135deg,var(--a),var(--a2));-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text}
+.bx{background:var(--card);border:1.5px solid var(--b2);border-radius:18px;padding:28px 32px;width:min(400px,92vw);display:flex;flex-direction:column;gap:13px;box-shadow:0 24px 64px rgba(0,0,0,.7)}
+.ot{font-size:20px;font-weight:800;text-align:center;background:linear-gradient(135deg,var(--a),var(--a2));-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text}
+
+/* FORM */
 .fi{width:100%;background:var(--bg);border:1.5px solid var(--b);border-radius:9px;padding:10px 13px;color:var(--t);font-family:'Plus Jakarta Sans',sans-serif;font-size:14px;outline:none;transition:border-color .2s}
-.fi:focus{border-color:var(--a)}
+.fi:focus{border-color:var(--a);box-shadow:0 0 0 3px rgba(79,127,255,.12)}
 .fi::placeholder{color:var(--m)}
+textarea.fi{resize:none;line-height:1.6}
 .bb{width:100%;padding:11px;border-radius:10px;border:none;cursor:pointer;font-family:'Plus Jakarta Sans',sans-serif;font-weight:700;font-size:14px;transition:all .18s}
 .bb:hover{filter:brightness(1.1);transform:translateY(-1px)}
 .bb.p{background:linear-gradient(135deg,var(--a),#6a5aff);color:#fff;box-shadow:0 4px 18px rgba(79,127,255,.3)}
 .bb.d{background:linear-gradient(135deg,var(--r),#ff6060);color:#fff}
-.bb.g{background:var(--s);color:var(--m);border:1.5px solid var(--b)}
-.err{color:var(--a2);font-size:12px;font-weight:600;text-align:center;min-height:14px}
+.bb.gh{background:var(--s);color:var(--m);border:1.5px solid var(--b)}
+.bb.y{background:linear-gradient(135deg,var(--y),#ffb84f);color:#07091a}
+.er{color:var(--a2);font-size:12px;font-weight:600;text-align:center;min-height:14px}
 .ok{color:var(--a3);font-size:11px;font-weight:600;text-align:center;min-height:14px}
-.tr{display:flex;gap:6px}
-.tr button{flex:1;padding:9px;border-radius:8px;border:1.5px solid var(--b);background:var(--s);color:var(--m);font-family:'Plus Jakarta Sans',sans-serif;font-weight:700;font-size:13px;cursor:pointer;transition:all .18s}
-.tr button.active{background:var(--a);color:#fff;border-color:var(--a)}
-/* ANN */
+
+/* ANN BAR */
 #ann{display:none;position:fixed;top:0;left:0;right:0;z-index:600;background:linear-gradient(90deg,var(--a),var(--a2));color:#fff;font-size:13px;font-weight:700;padding:10px 44px 10px 14px;text-align:center;animation:sd .3s ease}
 @keyframes sd{from{transform:translateY(-100%)}to{transform:translateY(0)}}
-#ann-x{position:absolute;right:14px;top:50%;transform:translateY(-50%);font-size:18px;cursor:pointer;opacity:.8}
+#ann-x{position:absolute;right:14px;top:50%;transform:translateY(-50%);font-size:18px;cursor:pointer}
+
+/* PINNED MSG */
+#pin{display:none;position:fixed;top:40px;left:58px;right:0;z-index:590;background:rgba(255,215,79,.12);border-bottom:1.5px solid rgba(255,215,79,.3);color:var(--y);font-size:12px;font-weight:700;padding:8px 14px;text-align:center}
+
 /* FAB */
 #fab{display:none;position:fixed;bottom:22px;right:22px;z-index:700;width:52px;height:52px;border-radius:50%;border:none;cursor:pointer;background:linear-gradient(135deg,var(--y),#ffb84f);color:#07091a;font-size:20px;box-shadow:0 6px 22px rgba(255,215,79,.5);transition:all .2s;align-items:center;justify-content:center}
-#fab:hover{transform:scale(1.1)}
+#fab:hover{transform:scale(1.1);box-shadow:0 8px 30px rgba(255,215,79,.7)}
+
 /* ADMIN */
 #adm{position:fixed;inset:0;z-index:850;display:flex;background:rgba(7,9,26,.98);backdrop-filter:blur(10px)}
 #adm.hidden{display:none}
-#anav{width:180px;background:var(--s);border-right:1.5px solid var(--b);display:flex;flex-direction:column;padding:16px 0;gap:3px;flex-shrink:0}
-#anav .logo{padding:0 14px 14px;border-bottom:1.5px solid var(--b);margin-bottom:6px}
-#anav .logo h2{font-size:14px;font-weight:800;color:var(--y)}
-#anav .logo p{font-size:10px;color:var(--m);margin-top:2px}
-.an{display:flex;align-items:center;gap:8px;padding:9px 14px;border:none;background:none;cursor:pointer;color:var(--m);font-family:'Plus Jakarta Sans',sans-serif;font-weight:600;font-size:12px;transition:all .15s;text-align:left;width:100%}
+#anv{width:185px;background:var(--s);border-right:1.5px solid var(--b);display:flex;flex-direction:column;padding:14px 0;gap:2px;flex-shrink:0;overflow-y:auto}
+#anv::-webkit-scrollbar{width:3px}
+#anv .lg{padding:0 14px 12px;border-bottom:1.5px solid var(--b);margin-bottom:6px}
+#anv .lg h2{font-size:14px;font-weight:800;color:var(--y)}
+#anv .lg p{font-size:10px;color:var(--m);margin-top:2px}
+.an{display:flex;align-items:center;gap:8px;padding:8px 14px;border:none;background:none;cursor:pointer;color:var(--m);font-family:'Plus Jakarta Sans',sans-serif;font-weight:600;font-size:12px;transition:all .15s;text-align:left;width:100%}
 .an:hover{background:var(--bg);color:var(--t)}
 .an.active{background:rgba(79,127,255,.15);color:var(--a);border-right:3px solid var(--a)}
-#acont{flex:1;overflow-y:auto;padding:20px}
-#acont::-webkit-scrollbar{width:4px}
-#acont::-webkit-scrollbar-thumb{background:var(--b2);border-radius:3px}
-.ap{display:none;flex-direction:column;gap:14px;max-width:640px}
+#acon{flex:1;overflow-y:auto;padding:20px}
+#acon::-webkit-scrollbar{width:4px}
+#acon::-webkit-scrollbar-thumb{background:var(--b2);border-radius:3px}
+.ap{display:none;flex-direction:column;gap:14px;max-width:660px}
 .ap.active{display:flex}
 .ap h1{font-size:18px;font-weight:800;color:var(--t)}
-.ap .desc{font-size:12px;color:var(--m);margin-top:-8px;line-height:1.6}
-.sec{background:var(--s);border:1.5px solid var(--b);border-radius:12px;padding:14px;display:flex;flex-direction:column;gap:9px}
-.sec h3{font-size:10px;font-weight:700;color:var(--m);text-transform:uppercase;letter-spacing:.09em}
-.row{display:flex;gap:8px}.row .fi{flex:1}
-.sb{padding:8px 13px;border-radius:8px;border:none;cursor:pointer;font-family:'Plus Jakarta Sans',sans-serif;font-weight:700;font-size:11px;transition:all .15s;white-space:nowrap}
+.ap .dc{font-size:12px;color:var(--m);margin-top:-8px;line-height:1.6}
+.sc{background:var(--s);border:1.5px solid var(--b);border-radius:12px;padding:14px;display:flex;flex-direction:column;gap:9px}
+.sc h3{font-size:10px;font-weight:700;color:var(--m);text-transform:uppercase;letter-spacing:.09em}
+.rw{display:flex;gap:8px}.rw .fi{flex:1}
+.sb{padding:8px 12px;border-radius:8px;border:none;cursor:pointer;font-family:'Plus Jakarta Sans',sans-serif;font-weight:700;font-size:11px;transition:all .15s;white-space:nowrap}
 .sb:hover{filter:brightness(1.1);transform:translateY(-1px)}
 .sb.p{background:var(--a);color:#fff}
 .sb.d{background:var(--r);color:#fff}
 .sb.w{background:var(--y);color:#07091a}
 .sb.s{background:var(--g);color:#07091a}
 .sb.pu{background:#8b5cf6;color:#fff}
-.tog{width:42px;height:22px;border-radius:11px;border:none;cursor:pointer;position:relative;transition:background .25s;flex-shrink:0}
-.tog.on{background:var(--a3)}.tog.off{background:var(--b2)}
-.tog::after{content:'';position:absolute;top:3px;width:16px;height:16px;border-radius:50%;background:#fff;box-shadow:0 1px 4px rgba(0,0,0,.3);transition:left .25s}
-.tog.on::after{left:23px}.tog.off::after{left:3px}
-.trow{display:flex;align-items:center;justify-content:space-between;gap:10px}
-.trow span{font-size:13px;font-weight:700;color:var(--t)}
-.sgrid{display:grid;grid-template-columns:repeat(auto-fill,minmax(120px,1fr));gap:10px}
-.scard{background:var(--card2);border:1.5px solid var(--b);border-radius:10px;padding:12px;display:flex;flex-direction:column;gap:3px}
-.scard .sv{font-size:26px;font-weight:800;color:var(--a)}
-.scard .sl{font-size:10px;color:var(--m);font-weight:600;text-transform:uppercase;letter-spacing:.06em}
-.ul{display:flex;flex-direction:column;gap:5px;max-height:280px;overflow-y:auto}
+.sb.pk{background:var(--a2);color:#fff}
+.tg{width:42px;height:22px;border-radius:11px;border:none;cursor:pointer;position:relative;transition:background .25s;flex-shrink:0}
+.tg.on{background:var(--a3)}.tg.off{background:var(--b2)}
+.tg::after{content:'';position:absolute;top:3px;width:16px;height:16px;border-radius:50%;background:#fff;box-shadow:0 1px 4px rgba(0,0,0,.3);transition:left .25s}
+.tg.on::after{left:23px}.tg.off::after{left:3px}
+.tr{display:flex;align-items:center;justify-content:space-between;gap:10px}
+.tr span{font-size:13px;font-weight:700;color:var(--t)}
+.sg{display:grid;grid-template-columns:repeat(auto-fill,minmax(115px,1fr));gap:10px}
+.sk{background:var(--c2);border:1.5px solid var(--b);border-radius:10px;padding:12px;display:flex;flex-direction:column;gap:3px}
+.sk .sv{font-size:24px;font-weight:800;color:var(--a)}
+.sk .sl{font-size:10px;color:var(--m);font-weight:600;text-transform:uppercase;letter-spacing:.06em}
+.ul{display:flex;flex-direction:column;gap:5px;max-height:260px;overflow-y:auto}
 .ul::-webkit-scrollbar{width:4px}
 .ul::-webkit-scrollbar-thumb{background:var(--b2);border-radius:3px}
 .ur{display:flex;align-items:center;gap:7px;background:var(--bg);border:1.5px solid var(--b);border-radius:9px;padding:9px 12px;flex-wrap:wrap}
 .un{font-size:12px;font-weight:700;color:var(--t);flex:1;min-width:60px}
-.ubg{font-size:9px;font-weight:700;text-transform:uppercase;letter-spacing:.06em;padding:3px 8px;border-radius:5px}
-.ubg.pending{background:rgba(255,215,79,.12);color:var(--y);border:1px solid rgba(255,215,79,.2)}
-.ubg.active{background:rgba(79,255,144,.1);color:var(--g);border:1px solid rgba(79,255,144,.2)}
-.ubg.banned{background:rgba(255,79,79,.1);color:var(--r);border:1px solid rgba(255,79,79,.2)}
+.ub{font-size:9px;font-weight:700;text-transform:uppercase;letter-spacing:.06em;padding:3px 8px;border-radius:5px}
+.ub.pending{background:rgba(255,215,79,.12);color:var(--y);border:1px solid rgba(255,215,79,.2)}
+.ub.active{background:rgba(79,255,144,.1);color:var(--g);border:1px solid rgba(79,255,144,.2)}
+.ub.banned{background:rgba(255,79,79,.1);color:var(--r);border:1px solid rgba(255,79,79,.2)}
 .ubs{display:flex;gap:4px;flex-wrap:wrap}
-.ub{padding:3px 9px;border-radius:5px;border:none;cursor:pointer;font-family:'Plus Jakarta Sans',sans-serif;font-weight:700;font-size:10px;transition:all .15s}
-.ub:hover{filter:brightness(1.15)}
-.ub.ap{background:rgba(79,255,144,.15);color:var(--g);border:1px solid rgba(79,255,144,.2)}
-.ub.bn{background:rgba(255,79,79,.15);color:var(--r);border:1px solid rgba(255,79,79,.2)}
-.ub.ub2{background:rgba(79,127,255,.15);color:var(--a);border:1px solid rgba(79,127,255,.2)}
-.ub.dy{background:rgba(255,255,255,.05);color:var(--m);border:1px solid var(--b)}
-.ub.dl{background:rgba(255,79,79,.08);color:var(--r);border:1px solid rgba(255,79,79,.15)}
-.fgrid{display:grid;grid-template-columns:repeat(auto-fill,minmax(150px,1fr));gap:8px}
-.ftog{background:var(--bg);border:1.5px solid var(--b);border-radius:9px;padding:10px 12px;display:flex;align-items:center;justify-content:space-between;gap:8px;font-size:12px;font-weight:700;color:var(--t)}
+.ua{padding:3px 9px;border-radius:5px;border:none;cursor:pointer;font-family:'Plus Jakarta Sans',sans-serif;font-weight:700;font-size:10px;transition:all .15s}
+.ua:hover{filter:brightness(1.15)}
+.ua.ap{background:rgba(79,255,144,.15);color:var(--g);border:1px solid rgba(79,255,144,.2)}
+.ua.bn{background:rgba(255,79,79,.15);color:var(--r);border:1px solid rgba(255,79,79,.2)}
+.ua.ub2{background:rgba(79,127,255,.15);color:var(--a);border:1px solid rgba(79,127,255,.2)}
+.ua.dy{background:rgba(255,255,255,.05);color:var(--m);border:1px solid var(--b)}
+.ua.dl{background:rgba(255,79,79,.08);color:var(--r);border:1px solid rgba(255,79,79,.15)}
+.ua.mt{background:rgba(139,92,246,.15);color:#a78bfa;border:1px solid rgba(139,92,246,.2)}
+.lg-list{display:flex;flex-direction:column;gap:5px;max-height:260px;overflow-y:auto}
+.lg-item{background:var(--bg);border:1.5px solid var(--b);border-radius:8px;padding:8px 11px;font-size:11px}
+.lg-item .lt{color:var(--m);font-size:10px;margin-bottom:2px}
+.lg-item .lm{color:var(--t)}
+.fg{display:grid;grid-template-columns:repeat(auto-fill,minmax(145px,1fr));gap:8px}
+.ft{background:var(--bg);border:1.5px solid var(--b);border-radius:9px;padding:10px 12px;display:flex;align-items:center;justify-content:space-between;gap:8px;font-size:12px;font-weight:700;color:var(--t)}
+.nw-list{display:flex;flex-direction:column;gap:5px;max-height:200px;overflow-y:auto}
+.nw-item{display:flex;align-items:center;gap:8px;background:var(--bg);border:1.5px solid var(--b);border-radius:8px;padding:8px 11px;font-size:12px}
+.nw-name{flex:1;font-weight:700;color:var(--t)}
+.poll-opt{display:flex;align-items:center;gap:8px;background:var(--bg);border:1.5px solid var(--b);border-radius:8px;padding:8px 11px;margin-bottom:5px}
+.poll-bar{height:6px;border-radius:3px;background:var(--a);transition:width .3s}
+
 /* SIDEBAR */
 #sb{position:fixed;top:0;left:0;bottom:0;width:58px;background:var(--s);border-right:1.5px solid var(--b);display:flex;flex-direction:column;align-items:center;padding:10px 0;gap:5px;z-index:100;box-shadow:4px 0 18px rgba(0,0,0,.3)}
-.slogo{width:34px;height:34px;border-radius:9px;background:linear-gradient(135deg,var(--a),var(--a2));display:flex;align-items:center;justify-content:center;font-size:15px;margin-bottom:5px;box-shadow:0 4px 12px rgba(79,127,255,.4)}
+.sl{width:34px;height:34px;border-radius:9px;background:linear-gradient(135deg,var(--a),var(--a2));display:flex;align-items:center;justify-content:center;font-size:15px;margin-bottom:5px;box-shadow:0 4px 12px rgba(79,127,255,.4)}
 .stb{width:42px;height:42px;border-radius:10px;border:1.5px solid transparent;background:none;cursor:pointer;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:2px;color:var(--m);transition:all .2s;font-size:8px;font-family:'Plus Jakarta Sans',sans-serif;font-weight:700}
 .stb .ic{font-size:17px;line-height:1}
 .stb:hover{background:var(--bg);color:var(--t);border-color:var(--b)}
 .stb.active{background:rgba(79,127,255,.15);border-color:rgba(79,127,255,.4);color:var(--a)}
+
 /* MAIN */
-#main{margin-left:58px;height:100vh;overflow:hidden}
+#mn{margin-left:58px;height:100vh;overflow:hidden}
 .pn{display:none;height:100%;flex-direction:column}
 .pn.active{display:flex}
+
 /* BROWSER */
-#bbar{display:flex;align-items:center;gap:6px;padding:7px 10px;background:var(--s);border-bottom:1.5px solid var(--b);flex-shrink:0}
+#bb{display:flex;align-items:center;gap:6px;padding:7px 10px;background:var(--s);border-bottom:1.5px solid var(--b);flex-shrink:0}
 .nb{background:none;border:1.5px solid var(--b);color:var(--m);width:27px;height:27px;border-radius:7px;cursor:pointer;font-size:13px;display:flex;align-items:center;justify-content:center;transition:all .15s}
 .nb:hover{border-color:var(--a);color:var(--a)}
 .nb:disabled{opacity:.2;pointer-events:none}
@@ -130,7 +154,7 @@ html,body{height:100%;overflow:hidden;background:var(--bg);color:var(--t);font-f
 #bcon{flex:1;position:relative;overflow:hidden;background:var(--bg)}
 #bhm{display:flex;flex-direction:column;align-items:center;justify-content:center;height:100%;gap:18px;background:var(--bg);position:relative;overflow:hidden}
 #bhm::before{content:'';position:absolute;inset:0;background:radial-gradient(ellipse at 30% 50%,rgba(79,127,255,.07) 0%,transparent 60%),radial-gradient(ellipse at 70% 60%,rgba(255,79,160,.05) 0%,transparent 60%);pointer-events:none}
-.hsw{display:flex;align-items:center;background:var(--card2);border:1.5px solid var(--b2);border-radius:13px;padding:0 13px;gap:9px;width:min(460px,90vw);box-shadow:0 8px 28px rgba(0,0,0,.3);transition:all .2s;position:relative;z-index:1}
+.hsw{display:flex;align-items:center;background:var(--c2);border:1.5px solid var(--b2);border-radius:13px;padding:0 13px;gap:9px;width:min(460px,90vw);box-shadow:0 8px 28px rgba(0,0,0,.3);transition:all .2s;position:relative;z-index:1}
 .hsw:focus-within{border-color:var(--a);box-shadow:0 8px 28px rgba(79,127,255,.15)}
 .hsi{flex:1;background:none;border:none;outline:none;color:var(--t);font-family:'Plus Jakarta Sans',sans-serif;font-size:14px;padding:13px 0}
 .hsi::placeholder{color:var(--m)}
@@ -140,9 +164,14 @@ html,body{height:100%;overflow:hidden;background:var(--bg);color:var(--t);font-f
 .ql:hover{border-color:var(--a3);color:var(--a3);transform:translateY(-1px)}
 #sf{display:none;width:100%;height:100%;border:none;background:#fff}
 #lb{position:absolute;top:0;left:0;height:2px;width:0%;background:linear-gradient(90deg,var(--a),var(--a2));transition:width .3s,opacity .4s;opacity:0;z-index:20}
+
+/* EUPHORIA TAB */
+#pE.active{display:flex}
+#ef{width:100%;height:100%;border:none}
+
 /* GAMES */
 #pG.active{display:flex}
-#gbar{display:flex;align-items:center;gap:8px;padding:8px 12px;background:var(--s);border-bottom:1.5px solid var(--b);flex-shrink:0}
+#gbr{display:flex;align-items:center;gap:8px;padding:8px 12px;background:var(--s);border-bottom:1.5px solid var(--b);flex-shrink:0}
 #gs{flex:1;background:var(--bg);border:1.5px solid var(--b);border-radius:8px;padding:7px 11px;color:var(--t);font-family:'Plus Jakarta Sans',sans-serif;font-size:13px;outline:none}
 #gs:focus{border-color:var(--a2)}
 #gs::placeholder{color:var(--m)}
@@ -163,6 +192,29 @@ html,body{height:100%;overflow:hidden;background:var(--bg);color:var(--t);font-f
 #gft{font-size:13px;font-weight:700;color:var(--t);flex:1}
 .otb{background:linear-gradient(135deg,var(--a),#6a5aff);color:#fff;border:none;border-radius:7px;padding:5px 12px;font-family:'Plus Jakarta Sans',sans-serif;font-weight:700;font-size:12px;cursor:pointer;text-decoration:none;display:inline-block}
 #gf{width:100%;flex:1;border:none;background:#000}
+
+/* SPOTIFY */
+#pS.active{display:flex}
+#sp-con{flex:1;display:flex;flex-direction:column;align-items:center;padding:20px;gap:16px;overflow-y:auto;background:var(--bg)}
+.sp-bar{display:flex;gap:8px;width:100%;max-width:600px}
+.sp-bar input{flex:1;background:var(--s);border:1.5px solid var(--b);border-radius:9px;padding:10px 14px;color:var(--t);font-family:'Plus Jakarta Sans',sans-serif;font-size:14px;outline:none}
+.sp-bar input:focus{border-color:var(--a3)}
+.sp-bar button{background:linear-gradient(135deg,var(--a3),#4fd9ff);color:#07091a;border:none;border-radius:9px;padding:10px 18px;font-family:'Plus Jakarta Sans',sans-serif;font-weight:700;font-size:13px;cursor:pointer}
+#sp-results{width:100%;max-width:600px;display:flex;flex-direction:column;gap:8px}
+.sp-track{background:var(--s);border:1.5px solid var(--b);border-radius:11px;padding:12px;display:flex;align-items:center;gap:12px;cursor:pointer;transition:all .2s}
+.sp-track:hover{border-color:var(--a3);transform:translateX(4px)}
+.sp-track img{width:48px;height:48px;border-radius:6px;object-fit:cover;flex-shrink:0}
+.sp-info{flex:1;min-width:0}
+.sp-name{font-size:13px;font-weight:700;color:var(--t);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.sp-artist{font-size:11px;color:var(--m);margin-top:2px}
+.sp-play{background:var(--a3);color:#07091a;border:none;border-radius:50%;width:32px;height:32px;cursor:pointer;font-size:14px;display:flex;align-items:center;justify-content:center;flex-shrink:0}
+#sp-player{position:fixed;bottom:0;left:58px;right:0;background:var(--s);border-top:1.5px solid var(--b);padding:10px 16px;display:none;align-items:center;gap:12px;z-index:200}
+#sp-player img{width:42px;height:42px;border-radius:6px}
+#sp-player .info{flex:1;min-width:0}
+#sp-player .info .name{font-size:13px;font-weight:700;color:var(--t);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+#sp-player .info .artist{font-size:11px;color:var(--m)}
+#sp-player audio{flex:1;height:32px;min-width:0}
+
 /* AI */
 #pA.active{display:flex}
 #aih{padding:10px 16px;background:var(--s);border-bottom:1.5px solid var(--b);flex-shrink:0}
@@ -192,7 +244,7 @@ html,body{height:100%;overflow:hidden;background:var(--bg);color:var(--t);font-f
 #ao::-webkit-scrollbar{width:4px}
 #ao::-webkit-scrollbar-thumb{background:var(--b2);border-radius:3px}
 #ao:empty::after{content:'Your summary and answers will appear here…';color:var(--m);font-style:italic}
-.bub{background:var(--card2);border:1.5px solid var(--b);border-radius:10px;padding:11px 13px;margin-bottom:10px;animation:fu .25s ease}
+.bub{background:var(--c2);border:1.5px solid var(--b);border-radius:10px;padding:11px 13px;margin-bottom:10px;animation:fu .25s ease}
 @keyframes fu{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:translateY(0)}}
 .bub.q{border-left:3px solid var(--a3)}
 .bub.a{border-left:3px solid var(--a)}
@@ -211,270 +263,487 @@ html,body{height:100%;overflow:hidden;background:var(--bg);color:var(--t);font-f
 </head>
 <body>
 
-<div id="splash"><div class="spin"></div><div class="smsg" id="smsg">Connecting…</div></div>
+<!-- SPLASH -->
+<div id="spl"><div class="spin"></div><div class="sm" id="spm">Connecting…</div></div>
+
+<!-- ANN -->
 <div id="ann"><span id="ann-t"></span><span id="ann-x">✕</span></div>
 
+<!-- PINNED -->
+<div id="pin" id="pin-t"></div>
+
+<!-- FAB -->
+<button id="fab" onclick="oadm()">⚙️</button>
+
+<!-- NAME ENTRY -->
+<div class="ov hidden" id="name-sc">
+  <div class="bx" style="text-align:center;gap:16px">
+    <div style="font-size:44px">👋</div>
+    <div class="ot">Welcome</div>
+    <p style="font-size:13px;color:var(--m)">What's your name?</p>
+    <input class="fi" id="name-in" placeholder="Enter your name…" autocomplete="off" onkeydown="if(event.key==='Enter')enterName()"/>
+    <div class="er" id="name-er"></div>
+    <button class="bb p" onclick="enterName()">Enter →</button>
+  </div>
+</div>
+
 <!-- DISABLED -->
-<div class="ov hidden" id="dis">
-  <div class="box" style="text-align:center;gap:18px;border-color:rgba(255,79,79,.3)">
+<div class="ov hidden" id="dis-sc">
+  <div class="bx" style="text-align:center;gap:18px;border-color:rgba(255,79,79,.3)">
     <div style="font-size:46px">🔒</div>
-    <div class="otitle" style="background:linear-gradient(135deg,var(--r),var(--a2));-webkit-background-clip:text;background-clip:text">Site Unavailable</div>
+    <div class="ot" style="background:linear-gradient(135deg,var(--r),var(--a2));-webkit-background-clip:text;background-clip:text">Unavailable</div>
     <p id="dis-msg" style="font-size:13px;color:var(--m);line-height:1.7">This site has been taken offline by the administrator.</p>
   </div>
 </div>
 
-<!-- AUTH -->
-<div class="ov hidden" id="auth">
-  <div class="box">
-    <div style="text-align:center;font-size:38px">🔑</div>
-    <div class="otitle" id="auth-t">Sign In</div>
-    <div class="tr">
-      <button class="active" id="t-in" onclick="am('in')">Sign In</button>
-      <button id="t-up" onclick="am('up')">Sign Up</button>
-    </div>
-    <input class="fi" id="sn" placeholder="Your full name…" style="display:none"/>
-    <input class="fi" id="se" placeholder="Email (optional)…" style="display:none"/>
-    <input class="fi" id="su" placeholder="Username…" autocomplete="off" spellcheck="false"/>
-    <input class="fi" id="sp" type="password" placeholder="Password…" onkeydown="if(event.key==='Enter')doAuth(event.shiftKey)"/>
-    <div class="err" id="ae"></div>
-    <button class="bb p" id="auth-btn">Continue →</button>
-    <p style="text-align:center;font-size:11px;color:var(--m)">Admin: hold <kbd style="background:var(--s);padding:2px 5px;border-radius:4px;border:1px solid var(--b)">Shift</kbd> + click Continue</p>
-  </div>
-</div>
-
-<!-- PENDING -->
-<div class="ov hidden" id="pend">
-  <div class="box" style="text-align:center;gap:18px">
-    <div style="font-size:46px">⏳</div>
-    <div class="otitle">Pending Approval</div>
-    <p style="font-size:13px;color:var(--m);line-height:1.8">Your account is waiting for admin approval.<br>Click refresh to check your status.</p>
-    <button class="bb g" onclick="location.reload()">↻ Refresh</button>
-  </div>
-</div>
-
 <!-- BANNED -->
-<div class="ov hidden" id="ban">
-  <div class="box" style="text-align:center;gap:18px;border-color:rgba(255,79,79,.3)">
+<div class="ov hidden" id="ban-sc">
+  <div class="bx" style="text-align:center;gap:18px;border-color:rgba(255,79,79,.3)">
     <div style="font-size:46px">🚫</div>
-    <div class="otitle" style="background:linear-gradient(135deg,var(--r),var(--a2));-webkit-background-clip:text;background-clip:text">Banned</div>
+    <div class="ot" style="background:linear-gradient(135deg,var(--r),var(--a2));-webkit-background-clip:text;background-clip:text">Banned</div>
     <p style="font-size:13px;color:var(--m)">You have been banned from this site.</p>
-    <p id="ban-reason" style="font-size:12px;color:var(--r);font-weight:700;display:none"></p>
+    <p id="ban-rsn" style="font-size:12px;color:var(--r);font-weight:700;display:none"></p>
   </div>
 </div>
 
-<!-- ADMIN -->
+<!-- KICK -->
+<div class="ov hidden" id="kick-sc">
+  <div class="bx" style="text-align:center;gap:18px;border-color:rgba(255,215,79,.3)">
+    <div style="font-size:46px">⏱</div>
+    <div class="ot" style="background:linear-gradient(135deg,var(--y),var(--a2));-webkit-background-clip:text;background-clip:text">Temporarily Closed</div>
+    <p id="kick-msg" style="font-size:13px;color:var(--m)">Be back soon!</p>
+    <p style="font-size:28px;font-weight:800;color:var(--y)" id="kick-cd">—</p>
+    <button class="bb gh" onclick="location.reload()">↻ Refresh</button>
+  </div>
+</div>
+
+<!-- ADMIN PANEL -->
 <div id="adm" class="hidden">
-  <div id="anav">
-    <div class="logo"><h2>⚙️ Admin</h2><p>Control Panel</p></div>
+  <div id="anv">
+    <div class="lg"><h2>⚙️ Admin</h2><p>Full Control Panel</p></div>
     <button class="an active" onclick="ap('dash')">📊 Dashboard</button>
     <button class="an" onclick="ap('users')">👥 Users</button>
+    <button class="an" onclick="ap('live')">🟢 Live Activity</button>
     <button class="an" onclick="ap('msg')">📢 Broadcast</button>
     <button class="an" onclick="ap('feat')">🔧 Features</button>
     <button class="an" onclick="ap('access')">🔐 Access</button>
     <button class="an" onclick="ap('look')">🎨 Appearance</button>
+    <button class="an" onclick="ap('net')">🌐 Networks</button>
+    <button class="an" onclick="ap('email')">📧 Email</button>
+    <button class="an" onclick="ap('poll')">📊 Polls</button>
+    <button class="an" onclick="ap('games-adm')">🎮 Games</button>
+    <button class="an" onclick="ap('ai-adm')">🤖 AI Manager</button>
+    <button class="an" onclick="ap('log')">📋 Activity Log</button>
     <button class="an" onclick="ap('bak')">💾 Backup</button>
     <button class="an" onclick="ap('danger')">⚠️ Danger</button>
     <div style="margin-top:auto;padding:10px 14px;border-top:1.5px solid var(--b);display:flex;gap:7px">
       <button class="sb p" style="flex:1" onclick="cadm()">← Back</button>
-      <button class="sb d" style="flex:1" onclick="lout()">Out</button>
+      <button class="sb d" style="flex:1" onclick="lout()">Log Out</button>
     </div>
   </div>
-  <div id="acont">
+  <div id="acon">
 
     <!-- DASHBOARD -->
     <div class="ap active" id="pg-dash">
       <h1>📊 Dashboard</h1>
-      <p class="desc">Live overview of everything on your site.</p>
-      <div class="sgrid">
-        <div class="scard"><div class="sv" id="st0">—</div><div class="sl">Total Users</div></div>
-        <div class="scard"><div class="sv" id="st1">—</div><div class="sl">Active</div></div>
-        <div class="scard"><div class="sv" id="st2">—</div><div class="sl">Pending</div></div>
-        <div class="scard"><div class="sv" id="st3">—</div><div class="sl">Banned</div></div>
+      <p class="dc">Live overview of your entire site.</p>
+      <div class="sg">
+        <div class="sk"><div class="sv" id="st0">—</div><div class="sl">Total Users</div></div>
+        <div class="sk"><div class="sv" id="st1">—</div><div class="sl">Active</div></div>
+        <div class="sk"><div class="sv" id="st2">—</div><div class="sl">Pending</div></div>
+        <div class="sk"><div class="sv" id="st3">—</div><div class="sl">Banned</div></div>
+        <div class="sk"><div class="sv" id="st4">—</div><div class="sl">Online Now</div></div>
+        <div class="sk"><div class="sv" id="st5">—</div><div class="sl">Networks</div></div>
       </div>
-      <div class="sec">
-        <h3>Site On / Off</h3>
-        <div class="trow"><span id="slbl">Site ENABLED ✅</span><button class="tog on" id="stog" onclick="togSite()"></button></div>
-      </div>
-      <div class="sec">
-        <h3>Quick Actions</h3>
-        <div style="display:flex;gap:7px;flex-wrap:wrap">
-          <button class="sb p" onclick="ap('users')">👥 Users</button>
-          <button class="sb w" onclick="ap('msg')">📢 Broadcast</button>
-          <button class="sb s" onclick="dlBak()">💾 Backup</button>
-          <button class="sb pu" onclick="ap('look')">🎨 Theme</button>
-          <button class="sb d" onclick="ap('danger')">⚠️ Danger</button>
+      <div class="sc">
+        <h3>Emergency Controls</h3>
+        <div style="display:flex;gap:8px;flex-wrap:wrap">
+          <button class="sb d" onclick="emergOff()">🚨 Emergency Shutdown</button>
+          <button class="sb w" onclick="ap('msg')">⏱ Kick Everyone</button>
+          <button class="sb pu" onclick="ap('msg')">📢 Broadcast</button>
         </div>
       </div>
-      <div class="sec">
+      <div class="sc">
+        <h3>Site Status</h3>
+        <div class="tr"><span id="slbl">Site ENABLED ✅</span><button class="tg on" id="stog" onclick="togSite()"></button></div>
+      </div>
+      <div class="sc">
+        <h3>Message of the Day</h3>
+        <div class="rw">
+          <input class="fi" id="motd-in" placeholder="Shown on home screen for all users…"/>
+          <button class="sb p" onclick="savMOTD()">Save</button>
+        </div>
+        <div class="ok" id="motd-ok"></div>
+      </div>
+      <div class="sc">
         <h3>Connection Status</h3>
-        <div id="conn-status" style="font-size:13px;color:var(--a3);font-weight:700">✅ Connected to Supabase</div>
+        <div id="conn-st" style="font-size:13px;color:var(--a3);font-weight:700">✅ Connected to Supabase</div>
+        <button class="sb p" style="width:100%" onclick="testConn()">Test Connection</button>
       </div>
     </div>
 
     <!-- USERS -->
     <div class="ap" id="pg-users">
       <h1>👥 Users</h1>
-      <p class="desc">Manage all user accounts. Changes apply instantly.</p>
-      <div class="sec">
-        <h3>Filter</h3>
+      <p class="dc">Full user management. All changes instant.</p>
+      <div class="sc">
+        <h3>Filter & Search</h3>
         <div style="display:flex;gap:7px;flex-wrap:wrap">
           <button class="sb p" onclick="lu('all')">All</button>
           <button class="sb w" onclick="lu('pending')">Pending</button>
           <button class="sb s" onclick="lu('active')">Active</button>
           <button class="sb d" onclick="lu('banned')">Banned</button>
         </div>
-        <input class="fi" id="usrch" placeholder="Search name or username…" oninput="fusr(this.value)"/>
+        <input class="fi" id="usrch" placeholder="Search by name or username…" oninput="fusr(this.value)"/>
       </div>
-      <div class="sec">
+      <div class="sc">
         <h3>User List</h3>
         <div class="ul" id="ulist"><div style="color:var(--m);font-size:12px">Loading…</div></div>
         <button class="sb p" style="width:100%" onclick="lu('all')">↻ Refresh</button>
       </div>
-      <div class="sec">
+      <div class="sc">
         <h3>Ban with Reason</h3>
-        <div class="row">
-          <input class="fi" id="ban-u" placeholder="Username…"/>
-          <input class="fi" id="ban-r" placeholder="Reason (user will see this)…"/>
+        <div class="rw">
+          <input class="fi" id="ban-u" placeholder="Username or name…"/>
+          <input class="fi" id="ban-r" placeholder="Reason (user sees this)…"/>
           <button class="sb d" onclick="banWR()">Ban</button>
         </div>
         <div class="ok" id="ban-ok"></div>
       </div>
-      <div class="sec">
-        <h3>Approve All Pending</h3>
-        <button class="sb s" style="width:100%" onclick="appAll()">✅ Approve All</button>
-        <div class="ok" id="app-ok"></div>
+      <div class="sc">
+        <h3>VIP List</h3>
+        <p style="font-size:11px;color:var(--m)">VIP names get instant access — no approval needed.</p>
+        <div class="rw">
+          <input class="fi" id="vip-in" placeholder="Add name to VIP list…"/>
+          <button class="sb w" onclick="addVIP()">Add VIP</button>
+        </div>
+        <div id="vip-list" style="font-size:12px;color:var(--m);margin-top:4px"></div>
+        <div class="ok" id="vip-ok"></div>
+      </div>
+      <div class="sc">
+        <h3>Auto-Ban Words</h3>
+        <p style="font-size:11px;color:var(--m)">Names containing these words are automatically banned on entry.</p>
+        <div class="rw">
+          <input class="fi" id="bword-in" placeholder="Add banned word…"/>
+          <button class="sb d" onclick="addBWord()">Add</button>
+        </div>
+        <div id="bword-list" style="font-size:12px;color:var(--m);margin-top:4px"></div>
+        <div class="ok" id="bword-ok"></div>
+      </div>
+      <div class="sc">
+        <h3>Bulk Actions</h3>
+        <div style="display:flex;gap:7px;flex-wrap:wrap">
+          <button class="sb s" onclick="appAll()">✅ Approve All Pending</button>
+          <button class="sb d" onclick="banAll()">🚫 Ban Everyone</button>
+          <button class="sb d" onclick="delAll()">🗑 Delete All</button>
+        </div>
+        <div class="ok" id="bulk-ok"></div>
+      </div>
+    </div>
+
+    <!-- LIVE ACTIVITY -->
+    <div class="ap" id="pg-live">
+      <h1>🟢 Live Activity</h1>
+      <p class="dc">See what everyone is doing on the site right now.</p>
+      <div class="sc">
+        <h3>Currently Online</h3>
+        <div class="ul" id="live-list"><div style="color:var(--m);font-size:12px">Loading…</div></div>
+        <button class="sb p" style="width:100%" onclick="ldLive()">↻ Refresh</button>
+      </div>
+      <div class="sc">
+        <h3>Online Count</h3>
+        <div style="font-size:32px;font-weight:800;color:var(--a3)" id="live-count">—</div>
+        <p style="font-size:11px;color:var(--m)">Users active in the last 5 minutes</p>
       </div>
     </div>
 
     <!-- BROADCAST -->
     <div class="ap" id="pg-msg">
       <h1>📢 Broadcast</h1>
-      <p class="desc">Send messages to all users instantly.</p>
-      <div class="sec">
+      <p class="dc">Communicate with all users instantly.</p>
+      <div class="sc">
         <h3>Announcement Banner</h3>
-        <textarea class="fi" id="ann-in" rows="3" placeholder="Message for all users…"></textarea>
+        <textarea class="fi" id="ann-in" rows="3" placeholder="Message shown at top of site for everyone…"></textarea>
         <div style="display:flex;gap:7px">
-          <button class="sb p" style="flex:1" onclick="sndAnn()">📢 Send</button>
+          <button class="sb p" style="flex:1" onclick="sndAnn()">📢 Send to Everyone</button>
           <button class="sb w" onclick="clrAnn()">Clear</button>
         </div>
         <div class="ok" id="ann-ok"></div>
       </div>
-      <div class="sec">
-        <h3>Alert Popup (users must dismiss)</h3>
-        <div class="row">
+      <div class="sc">
+        <h3>Pinned Message</h3>
+        <p style="font-size:11px;color:var(--m)">Stays at top permanently until you remove it.</p>
+        <div class="rw">
+          <input class="fi" id="pin-in" placeholder="Pinned message…"/>
+          <button class="sb w" onclick="sndPin()">Pin</button>
+          <button class="sb d" onclick="clrPin()">Clear</button>
+        </div>
+        <div class="ok" id="pin-ok"></div>
+      </div>
+      <div class="sc">
+        <h3>Alert Popup</h3>
+        <p style="font-size:11px;color:var(--m)">Users must dismiss this before continuing.</p>
+        <div class="rw">
           <input class="fi" id="alrt-in" placeholder="Alert message…"/>
-          <button class="sb d" onclick="sndAlrt()">Send</button>
+          <button class="sb d" onclick="sndAlrt()">Send Alert</button>
         </div>
         <div class="ok" id="alrt-ok"></div>
       </div>
-      <div class="sec">
+      <div class="sc">
         <h3>Kick Everyone Off</h3>
-        <p style="font-size:11px;color:var(--m)">Locks everyone out for a set number of minutes. They see a countdown.</p>
-        <div class="row">
-          <input class="fi" id="kick-min" type="number" placeholder="Minutes…" style="width:90px;flex:none"/>
-          <input class="fi" id="kick-msg" placeholder="Message e.g. Back in 5 mins…"/>
+        <p style="font-size:11px;color:var(--m)">Locks everyone out for X minutes. They see a live countdown.</p>
+        <div class="rw">
+          <input class="fi" id="kick-m" type="number" placeholder="Minutes…" style="width:80px;flex:none"/>
+          <input class="fi" id="kick-msg-in" placeholder="Message to show users…"/>
           <button class="sb d" onclick="kickAll()">Kick</button>
         </div>
         <div class="ok" id="kick-ok"></div>
+      </div>
+      <div class="sc">
+        <h3>Event Countdown</h3>
+        <p style="font-size:11px;color:var(--m)">Shows a live countdown to an event on users home screen.</p>
+        <div class="rw">
+          <input class="fi" id="ev-name" placeholder="Event name…"/>
+          <input class="fi" id="ev-time" type="datetime-local"/>
+          <button class="sb pu" onclick="setEvent()">Set</button>
+        </div>
+        <button class="sb d" style="width:100%" onclick="clrEvent()">Clear Event</button>
+        <div class="ok" id="ev-ok"></div>
       </div>
     </div>
 
     <!-- FEATURES -->
     <div class="ap" id="pg-feat">
       <h1>🔧 Feature Controls</h1>
-      <p class="desc">Toggle features on or off for all users instantly.</p>
-      <div class="sec">
-        <h3>Site Sections</h3>
-        <div class="fgrid" id="ftogs"></div>
+      <p class="dc">Toggle any feature on or off for all users instantly.</p>
+      <div class="sc">
+        <h3>Features</h3>
+        <div class="fg" id="ftogs"></div>
+        <div class="ok" id="feat-ok"></div>
       </div>
-      <div class="ok" id="feat-ok"></div>
     </div>
 
     <!-- ACCESS -->
     <div class="ap" id="pg-access">
       <h1>🔐 Access Control</h1>
-      <div class="sec">
+      <div class="sc">
         <h3>Site On / Off</h3>
-        <div class="trow"><span id="slbl2">Site ENABLED ✅</span><button class="tog on" id="stog2" onclick="togSite()"></button></div>
+        <div class="tr"><span id="slbl2">Site ENABLED ✅</span><button class="tg on" id="stog2" onclick="togSite()"></button></div>
+        <p style="font-size:11px;color:var(--m)">Instantly locks everyone out.</p>
       </div>
-      <div class="sec">
-        <h3>Lock Signups</h3>
-        <div class="trow"><span id="sulbl">Signups OPEN</span><button class="tog on" id="sutog" onclick="togSu()"></button></div>
+      <div class="sc">
+        <h3>Lock Signups / Name Entry</h3>
+        <div class="tr"><span id="sulbl">Entry OPEN</span><button class="tg on" id="sutog" onclick="togSu()"></button></div>
+        <p style="font-size:11px;color:var(--m)">Turn off to stop new visitors from entering.</p>
       </div>
-      <div class="sec">
-        <h3>Change User Password</h3>
-        <div class="row">
-          <input class="fi" id="nup" type="password" placeholder="New signup password…"/>
-          <button class="sb p" onclick="chUPw()">Save</button>
+      <div class="sc">
+        <h3>Max Users Allowed</h3>
+        <p style="font-size:11px;color:var(--m)">Set to 0 for unlimited. When full, new visitors see a waiting screen.</p>
+        <div class="rw">
+          <input class="fi" id="max-u" type="number" placeholder="0 = unlimited"/>
+          <button class="sb p" onclick="savMax()">Save</button>
         </div>
-        <div class="ok" id="upw-ok"></div>
+        <div class="ok" id="max-ok"></div>
       </div>
-      <div class="sec">
+      <div class="sc">
         <h3>Change Admin Password</h3>
-        <div class="row">
+        <div class="rw">
           <input class="fi" id="nap" type="password" placeholder="New admin password…"/>
           <button class="sb d" onclick="chAPw()">Save</button>
         </div>
         <div class="ok" id="apw-ok"></div>
+      </div>
+      <div class="sc">
+        <h3>Custom Maintenance Message</h3>
+        <div class="rw">
+          <input class="fi" id="maint-in" placeholder="Message shown when site is off…"/>
+          <button class="sb w" onclick="savMaint()">Save</button>
+        </div>
+        <div class="ok" id="maint-ok"></div>
       </div>
     </div>
 
     <!-- APPEARANCE -->
     <div class="ap" id="pg-look">
       <h1>🎨 Appearance</h1>
-      <div class="sec">
+      <div class="sc">
         <h3>Colour Theme</h3>
         <div id="thgrid" style="display:grid;grid-template-columns:repeat(auto-fill,minmax(90px,1fr));gap:8px"></div>
         <div class="ok" id="th-ok"></div>
       </div>
-      <div class="sec">
+      <div class="sc">
+        <h3>Custom Loading Message</h3>
+        <div class="rw">
+          <input class="fi" id="ldmsg-in" placeholder="Connecting…"/>
+          <button class="sb p" onclick="savLdMsg()">Save</button>
+        </div>
+        <div class="ok" id="ldmsg-ok"></div>
+      </div>
+      <div class="sc">
         <h3>Custom CSS for Everyone</h3>
         <textarea class="fi" id="ccss" rows="5" placeholder="body { background: red; }"></textarea>
         <div style="display:flex;gap:7px">
-          <button class="sb p" style="flex:1" onclick="savCSS()">Apply</button>
+          <button class="sb p" style="flex:1" onclick="savCSS()">Apply for Everyone</button>
           <button class="sb d" onclick="clrCSS()">Clear</button>
         </div>
         <div class="ok" id="css-ok"></div>
       </div>
     </div>
 
+    <!-- NETWORKS -->
+    <div class="ap" id="pg-net">
+      <h1>🌐 Network Control</h1>
+      <p class="dc">See every WiFi network that has accessed your site. Block any of them instantly.</p>
+      <div class="sc">
+        <h3>Known Networks</h3>
+        <div class="nw-list" id="nw-list"><div style="color:var(--m);font-size:12px">Loading…</div></div>
+        <button class="sb p" style="width:100%;margin-top:6px" onclick="ldNets()">↻ Refresh</button>
+      </div>
+      <div class="sc">
+        <h3>Manually Block a Network</h3>
+        <div class="rw">
+          <input class="fi" id="nw-in" placeholder="Network name or IP…"/>
+          <button class="sb d" onclick="blockNet()">Block</button>
+        </div>
+        <div class="ok" id="nw-ok"></div>
+      </div>
+    </div>
+
+    <!-- EMAIL -->
+    <div class="ap" id="pg-email">
+      <h1>📧 Mass Email</h1>
+      <p class="dc">Send emails to everyone who provided an email address.</p>
+      <div class="sc">
+        <h3>Send Mass Email</h3>
+        <p style="font-size:11px;color:var(--m)">Uses mailto — opens your email client with everyone in BCC.</p>
+        <input class="fi" id="em-sub" placeholder="Subject…" style="margin-bottom:7px"/>
+        <textarea class="fi" id="em-body" rows="4" placeholder="Email body…"></textarea>
+        <button class="sb p" style="width:100%" onclick="sendMassEmail()">📧 Open Email Client</button>
+        <div class="ok" id="em-ok"></div>
+      </div>
+      <div class="sc">
+        <h3>Email List</h3>
+        <div id="em-list" style="font-size:12px;color:var(--m)">Loading…</div>
+        <button class="sb p" style="width:100%;margin-top:6px" onclick="ldEmails()">↻ Refresh</button>
+      </div>
+    </div>
+
+    <!-- POLLS -->
+    <div class="ap" id="pg-poll">
+      <h1>📊 Polls</h1>
+      <p class="dc">Create a poll — all users see it and can vote. Results update live.</p>
+      <div class="sc">
+        <h3>Create Poll</h3>
+        <input class="fi" id="poll-q" placeholder="Poll question…"/>
+        <input class="fi" id="poll-o1" placeholder="Option 1…"/>
+        <input class="fi" id="poll-o2" placeholder="Option 2…"/>
+        <input class="fi" id="poll-o3" placeholder="Option 3 (optional)…"/>
+        <input class="fi" id="poll-o4" placeholder="Option 4 (optional)…"/>
+        <button class="sb p" style="width:100%" onclick="savPoll()">Launch Poll</button>
+        <button class="sb d" style="width:100%" onclick="clrPoll()">Clear Poll</button>
+        <div class="ok" id="poll-ok"></div>
+      </div>
+      <div class="sc">
+        <h3>Current Results</h3>
+        <div id="poll-res">No active poll.</div>
+      </div>
+    </div>
+
+    <!-- GAMES ADMIN -->
+    <div class="ap" id="pg-games-adm">
+      <h1>🎮 Games Admin</h1>
+      <div class="sc">
+        <h3>Featured Game of the Day</h3>
+        <div class="rw">
+          <input class="fi" id="fg-in" placeholder="Game name exactly as listed…"/>
+          <button class="sb w" onclick="savFG()">Set</button>
+        </div>
+        <div class="ok" id="fg-ok"></div>
+      </div>
+      <div class="sc">
+        <h3>Game of the Week</h3>
+        <div class="rw">
+          <input class="fi" id="gw-in" placeholder="Game name…"/>
+          <button class="sb pu" onclick="savGW()">Set</button>
+        </div>
+        <div class="ok" id="gw-ok"></div>
+      </div>
+    </div>
+
+    <!-- AI MANAGER -->
+    <div class="ap" id="pg-ai-adm">
+      <h1>🤖 AI Site Manager</h1>
+      <p class="dc">The AI can answer questions about your site and execute admin commands when you're away.</p>
+      <div class="sc">
+        <h3>AI Manager On / Off</h3>
+        <div class="tr"><span id="ai-lbl">AI Manager OFF</span><button class="tg off" id="ai-tog" onclick="togAI()"></button></div>
+      </div>
+      <div class="sc">
+        <h3>Chat with Your Site AI</h3>
+        <p style="font-size:11px;color:var(--m)">Ask anything about your site or give it commands like "approve all users" or "send announcement saying hello"</p>
+        <div id="ai-chat" style="background:var(--bg);border:1.5px solid var(--b);border-radius:9px;padding:12px;min-height:120px;max-height:220px;overflow-y:auto;font-size:12px;margin-bottom:8px;line-height:1.7"></div>
+        <div class="rw">
+          <input class="fi" id="ai-cmd" placeholder="Ask AI or give a command…" onkeydown="if(event.key==='Enter')aiCmd()"/>
+          <button class="sb pu" onclick="aiCmd()">Send</button>
+        </div>
+      </div>
+      <div class="sc">
+        <h3>AI Rules When You're Away</h3>
+        <textarea class="fi" id="ai-rules" rows="4" placeholder="e.g. Auto approve users. Ban anyone named 'test'. Send a welcome announcement every morning."></textarea>
+        <button class="sb p" style="width:100%" onclick="savAIRules()">Save Rules</button>
+        <div class="ok" id="ai-ok"></div>
+      </div>
+    </div>
+
+    <!-- ACTIVITY LOG -->
+    <div class="ap" id="pg-log">
+      <h1>📋 Activity Log</h1>
+      <p class="dc">Every action on the site recorded with timestamps.</p>
+      <div class="sc">
+        <h3>Recent Activity</h3>
+        <div class="lg-list" id="lg-list"><div style="color:var(--m);font-size:12px">Loading…</div></div>
+        <div style="display:flex;gap:7px;margin-top:6px">
+          <button class="sb p" style="flex:1" onclick="ldLog()">↻ Refresh</button>
+          <button class="sb d" onclick="clrLog()">Clear Log</button>
+        </div>
+      </div>
+    </div>
+
     <!-- BACKUP -->
     <div class="ap" id="pg-bak">
       <h1>💾 Backup & Restore</h1>
-      <div class="sec">
+      <div class="sc">
         <h3>Download Backup</h3>
-        <button class="sb s" style="width:100%" onclick="dlBak()">⬇️ Download Full Backup</button>
-        <div style="font-size:11px;color:var(--m)">Last: <span id="lb-t">never</span></div>
+        <button class="sb s" style="width:100%" onclick="dlBak()">⬇️ Download Full Backup (JSON)</button>
+        <button class="sb p" style="width:100%;margin-top:6px" onclick="expCSV()">📊 Export Users as CSV</button>
+        <div style="font-size:11px;color:var(--m);margin-top:4px">Last backup: <span id="lb-t">never</span></div>
       </div>
-      <div class="sec">
-        <h3>Restore</h3>
+      <div class="sc">
+        <h3>Restore from Backup</h3>
         <input type="file" id="rf" accept=".json" style="font-size:12px;color:var(--m);background:var(--bg);border:1.5px solid var(--b);border-radius:8px;padding:8px;width:100%"/>
-        <button class="sb w" style="width:100%;margin-top:4px" onclick="restBak()">⬆️ Restore</button>
+        <button class="sb w" style="width:100%;margin-top:6px" onclick="restBak()">⬆️ Restore</button>
         <div class="ok" id="bak-ok"></div>
-      </div>
-      <div class="sec">
-        <h3>Export Users CSV</h3>
-        <button class="sb p" style="width:100%" onclick="expCSV()">📊 Export CSV</button>
       </div>
     </div>
 
     <!-- DANGER -->
     <div class="ap" id="pg-danger">
       <h1>⚠️ Danger Zone</h1>
-      <p class="desc">Irreversible actions. Back up first.</p>
-      <div class="sec" style="border-color:rgba(255,79,79,.3)">
+      <p class="dc">Irreversible. Back up first.</p>
+      <div class="sc" style="border-color:rgba(255,79,79,.3)">
+        <h3>Emergency Shutdown</h3>
+        <p style="font-size:11px;color:var(--m)">Instantly disables the site for everyone. You stay in as admin.</p>
+        <button class="sb d" style="width:100%" onclick="emergOff()">🚨 Emergency Shutdown NOW</button>
+        <div class="ok" id="emerg-ok"></div>
+      </div>
+      <div class="sc" style="border-color:rgba(255,79,79,.3)">
         <h3>Reset Site State</h3>
-        <button class="sb d" style="width:100%" onclick="sReset()">Reset</button>
+        <button class="sb d" style="width:100%" onclick="sReset()">Reset Announcements + CSS + Images</button>
         <div class="ok" id="rst-ok"></div>
       </div>
-      <div class="sec" style="border-color:rgba(255,79,79,.3)">
-        <h3>Ban Everyone</h3>
-        <button class="sb d" style="width:100%" onclick="banEv()">🚫 Ban All</button>
-        <div class="ok" id="bev-ok"></div>
-      </div>
-      <div class="sec" style="border-color:rgba(255,79,79,.3)">
+      <div class="sc" style="border-color:rgba(255,79,79,.3)">
         <h3>Delete All Users</h3>
-        <button class="sb d" style="width:100%" onclick="delEv()">🗑 Delete All</button>
+        <button class="sb d" style="width:100%" onclick="delAll()">🗑 Delete Every User Account</button>
         <div class="ok" id="dev-ok"></div>
       </div>
     </div>
@@ -482,34 +751,22 @@ html,body{height:100%;overflow:hidden;background:var(--bg);color:var(--t);font-f
   </div>
 </div>
 
-<!-- FAB -->
-<button id="fab" onclick="oadm()">⚙️</button>
-
-<!-- KICK SCREEN -->
-<div class="ov hidden" id="kick-sc">
-  <div class="box" style="text-align:center;gap:18px;border-color:rgba(255,215,79,.3)">
-    <div style="font-size:46px">⏱</div>
-    <div class="otitle" style="background:linear-gradient(135deg,var(--y),var(--a2));-webkit-background-clip:text;background-clip:text">Site Temporarily Closed</div>
-    <p id="kick-msg-d" style="font-size:13px;color:var(--m)">Be back soon!</p>
-    <p style="font-size:22px;font-weight:800;color:var(--y)" id="kick-cd">—</p>
-    <button class="bb g" onclick="location.reload()">↻ Refresh</button>
-  </div>
-</div>
-
 <!-- SIDEBAR -->
 <div id="sb">
-  <div class="slogo">🌐</div>
+  <div class="sl">🌐</div>
   <button class="stb active" data-t="B" onclick="gt('B')" title="Browser"><span class="ic">🌐</span>Web</button>
+  <button class="stb" data-t="E" onclick="gt('E')" title="Euphoria"><span class="ic">🎓</span>Learn</button>
   <button class="stb" data-t="G" onclick="gt('G')" title="Games"><span class="ic">🎮</span>Games</button>
+  <button class="stb" data-t="S" onclick="gt('S')" title="Spotify"><span class="ic">🎵</span>Music</button>
   <button class="stb" data-t="A" onclick="gt('A')" title="AI"><span class="ic">🤖</span>AI</button>
 </div>
 
 <!-- MAIN -->
-<div id="main">
+<div id="mn">
 
   <!-- BROWSER -->
   <div class="pn active" id="pB">
-    <div id="bbar">
+    <div id="bb">
       <button class="nb" id="bk" disabled>&#8592;</button>
       <button class="nb" id="fw" disabled>&#8594;</button>
       <button class="nb" id="rl">&#8635;</button>
@@ -523,29 +780,37 @@ html,body{height:100%;overflow:hidden;background:var(--bg);color:var(--t);font-f
     <div id="bcon">
       <div id="lb"></div>
       <div id="bhm">
+        <div style="position:relative;z-index:1;text-align:center">
+          <div id="motd-d" style="font-size:13px;color:var(--a3);font-weight:700;margin-bottom:8px;display:none"></div>
+          <div id="quote-d" style="font-size:12px;color:var(--m);font-style:italic;margin-bottom:16px"></div>
+        </div>
         <div class="hsw">
           <input class="hsi" id="hsi" placeholder="Search Bing or enter a URL…" autocomplete="off" onkeydown="if(event.key==='Enter')nav(this.value)"/>
           <button class="hsb" onclick="nav(document.getElementById('hsi').value)">Search</button>
         </div>
         <div class="qls">
           <div class="ql" onclick="nav('https://www.bing.com')">🔍 Bing</div>
-          <div class="ql" onclick="navYT()">▶️ YouTube</div>
-          <div class="ql" onclick="navSP()">🎵 Spotify</div>
-          <div class="ql" onclick="navTT()">🎵 TikTok</div>
-          <div class="ql" onclick="nav('https://www.euphorialearning.academy/')">🎓 Euphoria</div>
+          <div class="ql" onclick="openYT()">▶️ YouTube</div>
+          <div class="ql" onclick="gt('S')">🎵 Spotify</div>
+          <div class="ql" onclick="openTT()">🎵 TikTok</div>
+          <div class="ql" onclick="gt('E')">🎓 Euphoria</div>
           <div class="ql" onclick="nav('https://www.wikipedia.org')">📖 Wikipedia</div>
-          <div class="ql" onclick="nav('https://www.khanacademy.org')">📐 Khan Academy</div>
+          <div class="ql" onclick="nav('https://www.khanacademy.org')">📐 Khan</div>
           <div class="ql" onclick="nav('https://www.desmos.com/calculator')">📈 Desmos</div>
-          <div class="ql" onclick="nav('https://translate.google.com')">🌐 Translate</div>
         </div>
       </div>
       <iframe id="sf" sandbox="allow-scripts allow-forms allow-same-origin allow-popups allow-top-navigation allow-top-navigation-by-user-activation" allow="fullscreen *"></iframe>
     </div>
   </div>
 
+  <!-- EUPHORIA -->
+  <div class="pn" id="pE">
+    <iframe id="ef" src="https://www.euphorialearning.academy/" allow="fullscreen *" sandbox="allow-scripts allow-forms allow-same-origin allow-popups allow-top-navigation"></iframe>
+  </div>
+
   <!-- GAMES -->
   <div class="pn" id="pG">
-    <div id="gbar">
+    <div id="gbr">
       <input id="gs" placeholder="Search games…" oninput="fg(this.value)"/>
       <button class="bk" id="gbk" style="display:none" onclick="gbk()">← Games</button>
     </div>
@@ -558,9 +823,32 @@ html,body{height:100%;overflow:hidden;background:var(--bg);color:var(--t);font-f
     </div>
   </div>
 
+  <!-- SPOTIFY -->
+  <div class="pn" id="pS">
+    <div id="sp-con">
+      <div style="text-align:center;padding:10px 0">
+        <div style="font-size:20px;font-weight:800;color:var(--a3)">🎵 Music</div>
+        <div style="font-size:12px;color:var(--m);margin-top:4px">Search songs and artists — 30 second previews play instantly</div>
+      </div>
+      <div class="sp-bar">
+        <input id="sp-q" placeholder="Search songs, artists, albums…" onkeydown="if(event.key==='Enter')spSearch()"/>
+        <button onclick="spSearch()">Search</button>
+      </div>
+      <div id="sp-results"></div>
+    </div>
+    <div id="sp-player">
+      <img id="sp-art" src="" alt=""/>
+      <div class="info">
+        <div class="name" id="sp-name">—</div>
+        <div class="artist" id="sp-artist">—</div>
+      </div>
+      <audio id="sp-audio" controls></audio>
+    </div>
+  </div>
+
   <!-- AI -->
   <div class="pn" id="pA">
-    <div id="aih"><p>Paste up to 10,000 characters · Summarize · Ask questions · Scan a URL</p></div>
+    <div id="aih"><p>Paste up to 10,000 characters · Summarize · Ask questions · Scan any URL</p></div>
     <div id="aib">
       <div id="ail">
         <label>Your Text</label>
@@ -570,11 +858,11 @@ html,body{height:100%;overflow:hidden;background:var(--bg);color:var(--t);font-f
           <button class="ab p" id="smb" onclick="doSum()">✨ Summarize</button>
           <button class="ab s" onclick="clrAI()">Clear</button>
         </div>
-        <div style="border-top:1.5px solid var(--b);padding-top:10px;display:flex;flex-direction:column;gap:7px">
+        <div style="border-top:1.5px solid var(--b);padding-top:10px;display:flex;flex-direction:column;gap:7px;margin-top:4px">
           <label>Scan a URL</label>
           <div style="display:flex;gap:7px">
-            <input class="fi" id="scan-url" placeholder="Paste any URL to scan…" style="flex:1"/>
-            <button class="ab p" style="flex:none;padding:9px 13px" onclick="scanURL()">Scan</button>
+            <input class="fi" id="scan-url" placeholder="Paste any URL…" style="flex:1"/>
+            <button class="ab p" style="flex:none;padding:9px 12px" onclick="scanURL()">Scan</button>
           </div>
         </div>
       </div>
@@ -600,64 +888,39 @@ const sb=supabase.createClient(SB_URL,SB_KEY);
 const $=id=>document.getElementById(id);
 const show=id=>{const e=$(id);if(e)e.classList.remove('hidden');};
 const hide=id=>{const e=$(id);if(e)e.classList.add('hidden');};
-function msg(id,t,err=false){const e=$(id);if(!e)return;e.textContent=t;e.style.color=err?'var(--r)':'var(--a3)';if(t)setTimeout(()=>e.textContent='',4000);}
-function log(label,data){console.log('[HUB]',label,data);}
+function msg(id,t,err=false){const e=$(id);if(!e)return;e.textContent=t;e.style.color=err?'var(--r)':'var(--a3)';if(t)setTimeout(()=>{if(e)e.textContent='';},4000);}
+function L(l,d){console.log('[HUB]',l,d||'');}
 
-// DB
-async function dbG(t,c,v){
-  const{data,error}=await sb.from(t).select('*').eq(c,v).maybeSingle();
-  if(error)log('dbGet error',error);
-  return data;
-}
-async function dbA(t,f){
-  let q=sb.from(t).select('*');
-  try{q=q.order('joined_at',{ascending:false});}catch(e){}
-  if(f&&f!=='all')q=q.eq('status',f);
-  const{data,error}=await q;
-  if(error)log('dbAll error',error);
-  return data||[];
-}
-async function dbU(t,o,c){
-  const{error}=await sb.from(t).upsert(o,{onConflict:c});
-  if(error)log('dbUpsert error',error);
-  return !error;
-}
-async function dbP(t,c,v,p){
-  const{error}=await sb.from(t).update(p).eq(c,v);
-  if(error)log('dbPatch error',error);
-  return !error;
-}
-async function dbD(t,c,v){
-  const{error}=await sb.from(t).delete().eq(c,v);
-  if(error)log('dbDel error',error);
-  return !error;
-}
+// ═══ DB HELPERS ═══
+async function dbG(t,c,v){try{const{data,error}=await sb.from(t).select('*').eq(c,v).maybeSingle();if(error)L('dbGet err',error);return data;}catch(e){L('dbGet exc',e);return null;}}
+async function dbA(t,f){try{let q=sb.from(t).select('*');try{q=q.order('joined_at',{ascending:false});}catch(e){}if(f&&f!=='all')q=q.eq('status',f);const{data,error}=await q;if(error)L('dbAll err',error);return data||[];}catch(e){L('dbAll exc',e);return[];}}
+async function dbU(t,o,c){try{const{error}=await sb.from(t).upsert(o,{onConflict:c});if(error){L('dbU err',error);return false;}return true;}catch(e){L('dbU exc',e);return false;}}
+async function dbP(t,c,v,p){try{const{error}=await sb.from(t).update(p).eq(c,v);if(error){L('dbP err',error);return false;}return true;}catch(e){L('dbP exc',e);return false;}}
+async function dbD(t,c,v){try{const{error}=await sb.from(t).delete().eq(c,v);if(error){L('dbD err',error);return false;}return true;}catch(e){L('dbD exc',e);return false;}}
+async function dbIns(t,o){try{const{error}=await sb.from(t).insert(o);if(error){L('dbIns err',error);return false;}return true;}catch(e){L('dbIns exc',e);return false;}}
 
-// FEATURES
-const FEATS=['Browser','Games','AI Summarizer','Spotify','TikTok','YouTube'];
+// ═══ FEATURES ═══
+const FEATS=['Browser','Euphoria','Games','Music','AI Summarizer','YouTube','TikTok'];
 let disFeats=[];
 function isFeatOn(f){return!disFeats.includes(f);}
-function savFeats(){return dbU('settings',{id:'main',disabled_features:JSON.stringify(disFeats)},'id');}
+async function savFeats(){return dbU('settings',{id:'main',disabled_features:JSON.stringify(disFeats)},'id');}
 function renderFTogs(){
-  const g=$('ftogs');if(!g)return;
-  g.innerHTML='';
+  const g=$('ftogs');if(!g)return;g.innerHTML='';
   FEATS.forEach(f=>{
-    const on=isFeatOn(f);
-    const d=document.createElement('div');d.className='ftog';
-    d.innerHTML=`<span>${f}</span><button class="tog ${on?'on':'off'}" onclick="togFeat('${f}')"></button>`;
+    const on=isFeatOn(f);const d=document.createElement('div');d.className='ft';
+    d.innerHTML=`<span>${f}</span><button class="tg ${on?'on':'off'}" onclick="togFeat('${f}')"></button>`;
     g.appendChild(d);
   });
 }
 async function togFeat(f){
-  if(disFeats.includes(f))disFeats=disFeats.filter(x=>x!==f);
-  else disFeats.push(f);
-  await savFeats();
+  if(disFeats.includes(f))disFeats=disFeats.filter(x=>x!==f);else disFeats.push(f);
+  const ok=await savFeats();
   renderFTogs();
-  msg('feat-ok','✅ Updated!');
+  msg('feat-ok',ok?'✅ Updated for everyone!':'❌ Failed — check Supabase',!ok);
 }
 
-// THEMES
-const THS=[{n:'Navy',a:'#4f7fff',a2:'#ff4fa0',a3:'#4fffc8'},{n:'Purple',a:'#a855f7',a2:'#f472b6',a3:'#4ade80'},{n:'Sunset',a:'#f97316',a2:'#ec4899',a3:'#fbbf24'},{n:'Forest',a:'#22c55e',a2:'#84cc16',a3:'#06b6d4'},{n:'Ocean',a:'#06b6d4',a2:'#3b82f6',a3:'#8b5cf6'},{n:'Mono',a:'#e2e8f0',a2:'#94a3b8',a3:'#64748b'}];
+// ═══ THEMES ═══
+const THS=[{n:'Navy',a:'#4f7fff',a2:'#ff4fa0',a3:'#4fffc8'},{n:'Purple',a:'#a855f7',a2:'#f472b6',a3:'#4ade80'},{n:'Sunset',a:'#f97316',a2:'#ec4899',a3:'#fbbf24'},{n:'Forest',a:'#22c55e',a2:'#84cc16',a3:'#06b6d4'},{n:'Ocean',a:'#06b6d4',a2:'#3b82f6',a3:'#8b5cf6'},{n:'Mono',a:'#e2e8f0',a2:'#94a3b8',a3:'#64748b'},{n:'Rose',a:'#f43f5e',a2:'#fb923c',a3:'#fbbf24'},{n:'Jade',a:'#10b981',a2:'#06b6d4',a3:'#a78bfa'}];
 function rThs(){
   const g=$('thgrid');if(!g)return;
   g.innerHTML=THS.map((t,i)=>`<div style="background:var(--s);border:1.5px solid var(--b);border-radius:9px;padding:9px;cursor:pointer;text-align:center;font-size:11px;font-weight:700;color:var(--t);transition:all .15s" onclick="aTh(${i})"><div style="width:24px;height:24px;border-radius:50%;background:${t.a};margin:0 auto 5px"></div>${t.n}</div>`).join('');
@@ -668,6 +931,7 @@ async function aTh(i){
   document.documentElement.style.setProperty('--a2',t.a2);
   document.documentElement.style.setProperty('--a3',t.a3);
   await dbU('settings',{id:'main',theme:JSON.stringify(t)},'id');
+  await logA('admin','Changed theme to '+t.n,'');
   msg('th-ok','✅ Theme applied for everyone!');
 }
 async function ldTh(){
@@ -675,143 +939,173 @@ async function ldTh(){
   if(s?.theme){try{const t=JSON.parse(s.theme);document.documentElement.style.setProperty('--a',t.a);document.documentElement.style.setProperty('--a2',t.a2);document.documentElement.style.setProperty('--a3',t.a3);}catch(e){}}
 }
 
-// BOOT
-let ME=null,ADM=false;
+// ═══ ACTIVITY LOG ═══
+async function logA(user,action,details){
+  try{await dbIns('activity_log',{username:user,action,details,created_at:new Date().toISOString()});}catch(e){}
+}
+async function ldLog(){
+  const el=$('lg-list');if(!el)return;
+  el.innerHTML='<div style="color:var(--m);font-size:12px">Loading…</div>';
+  try{
+    const{data}=await sb.from('activity_log').select('*').order('created_at',{ascending:false}).limit(100);
+    if(!data||!data.length){el.innerHTML='<div style="color:var(--m);font-size:12px">No activity yet.</div>';return;}
+    el.innerHTML=data.map(l=>`<div class="lg-item"><div class="lt">${new Date(l.created_at).toLocaleString()} — ${l.username||'system'}</div><div class="lm">${l.action}${l.details?' — '+l.details:''}</div></div>`).join('');
+  }catch(e){el.innerHTML='<div style="color:var(--r);font-size:12px">Failed to load log.</div>';}
+}
+async function clrLog(){
+  try{await sb.from('activity_log').delete().neq('id',0);msg('bak-ok','✅ Log cleared');}catch(e){msg('bak-ok','❌ Failed',true);}
+}
+
+// ═══ BOOT ═══
+let ME=null,ADM=false,MY_NAME='';
+const QUOTES=['The best time to start was yesterday. The next best time is now.','Small steps every day lead to big results.','Keep going — you\'re doing great.','Every expert was once a beginner.'];
+
 async function boot(){
-  $('smsg').textContent='Connecting…';
+  $('spm').textContent='Connecting…';
   try{
     await ldTh();
     const s=await dbG('settings','id','main');
-    log('Settings loaded',s);
+    L('Settings',s);
 
-    // check kick
-    if(s?.kick_until){
-      const kt=parseInt(s.kick_until)||0;
-      if(kt>Date.now()&&!ADM){
-        fadeSp();
-        $('kick-msg-d').textContent=s.kick_message||'Be back soon!';
-        show('kick-sc');
-        startKickCD(kt);
-        return;
-      }
+    if(!s){
+      $('spm').textContent='Database not set up. Run the SQL in Supabase first.';
+      return;
     }
 
-    if(s?.site_enabled===false){fadeSp();show('dis');if(s.maint_msg)$('dis-msg').textContent=s.maint_msg;return;}
-    if(s?.announcement)sAnn(s.announcement);
-    if(s?.custom_css)$('ccs').textContent=s.custom_css;
-    if(s?.disabled_features){try{disFeats=JSON.parse(s.disabled_features)||[];}catch(e){}}
+    // kick check
+    if(s.kick_until&&parseInt(s.kick_until)>Date.now()&&!ADM){
+      fadeSp();$('kick-msg').textContent=s.kick_message||'Be back soon!';
+      show('kick-sc');startKCD(parseInt(s.kick_until));return;
+    }
+
+    // site disabled
+    if(s.site_enabled===false){fadeSp();if(s.maint_msg)$('dis-msg').textContent=s.maint_msg;show('dis-sc');return;}
+
+    // apply settings
+    if(s.announcement)sAnn(s.announcement);
+    if(s.pinned_msg)sPin(s.pinned_msg);
+    if(s.custom_css)$('ccs').textContent=s.custom_css;
+    if(s.disabled_features){try{disFeats=JSON.parse(s.disabled_features)||[];}catch(e){}}
+    if(s.motd){$('motd-d').textContent=s.motd;$('motd-d').style.display='block';}
+    $('quote-d').textContent=QUOTES[Math.floor(Math.random()*QUOTES.length)];
 
     // realtime
-    sb.channel('settings-ch').on('postgres_changes',{event:'*',schema:'public',table:'settings'},p=>{
-      const d=p.new;
-      if(!d)return;
+    sb.channel('settings-rt').on('postgres_changes',{event:'*',schema:'public',table:'settings'},p=>{
+      const d=p.new;if(!d)return;
       if(d.site_enabled===false&&!ADM){location.reload();return;}
-      if(d.kick_until&&parseInt(d.kick_until)>Date.now()&&!ADM){location.reload();return;}
+      if(d.kick_until&&parseInt(d.kick_until)>Date.now()&&!ADM){fadeSp();$('kick-msg').textContent=d.kick_message||'Be back soon!';show('kick-sc');startKCD(parseInt(d.kick_until));return;}
       if(d.announcement)sAnn(d.announcement);else clsAnn();
+      if(d.pinned_msg)sPin(d.pinned_msg);else clsPin();
       if(d.custom_css!==undefined)$('ccs').textContent=d.custom_css||'';
-      if(d.alert_msg&&d.alert_msg!==''){alert('📢 Message:\n\n'+d.alert_msg);}
+      if(d.alert_msg&&d.alert_msg.trim()!==''){alert('📢 Message from Owner:\n\n'+d.alert_msg);}
       if(d.disabled_features){try{disFeats=JSON.parse(d.disabled_features)||[];}catch(e){}}
       if(d.theme){try{const t=JSON.parse(d.theme);document.documentElement.style.setProperty('--a',t.a);document.documentElement.style.setProperty('--a2',t.a2);document.documentElement.style.setProperty('--a3',t.a3);}catch(e){}}
-    }).subscribe((status)=>{log('Realtime status',status);});
+      if(d.motd){$('motd-d').textContent=d.motd;$('motd-d').style.display='block';}
+    }).subscribe(st=>L('Realtime',st));
 
-    fadeSp();show('auth');
+    fadeSp();
+    // check stored name
+    const sn=localStorage.getItem('hub_name');
+    if(sn){
+      MY_NAME=sn;
+      await checkBan(sn);
+    }else{
+      show('name-sc');
+    }
   }catch(e){
-    log('Boot error',e);
-    $('smsg').textContent='Connection failed. Check console for details.';
+    L('Boot error',e);
+    $('spm').textContent='Connection failed. Check console (F12) for details.';
   }
 }
-function fadeSp(){$('splash').classList.add('fade');setTimeout(()=>$('splash').classList.add('gone'),400);}
+function fadeSp(){$('spl').classList.add('fade');setTimeout(()=>$('spl').classList.add('gone'),400);}
 boot();
 
+// ═══ ANN / PIN ═══
 function sAnn(t){$('ann-t').textContent='📢 '+t;$('ann').style.display='block';}
 function clsAnn(){$('ann').style.display='none';}
 $('ann-x').onclick=clsAnn;
+function sPin(t){$('pin').textContent='📌 '+t;$('pin').style.display='block';}
+function clsPin(){$('pin').style.display='none';}
 
-// KICK COUNTDOWN
-function startKickCD(until){
+// ═══ KICK COUNTDOWN ═══
+function startKCD(until){
   const el=$('kick-cd');
-  function tick(){
-    const rem=Math.max(0,Math.ceil((until-Date.now())/1000));
-    const m=Math.floor(rem/60),s=rem%60;
-    el.textContent=m+':'+(s<10?'0':'')+s;
-    if(rem>0)setTimeout(tick,1000);else location.reload();
-  }
+  function tick(){const rem=Math.max(0,Math.ceil((until-Date.now())/1000));const m=Math.floor(rem/60),s=rem%60;el.textContent=m+':'+(s<10?'0':'')+s;if(rem>0)setTimeout(tick,1000);else location.reload();}
   tick();
 }
 
-// AUTH
-let MODE='in';
-function am(m){
-  MODE=m;
-  $('auth-t').textContent=m==='in'?'Sign In':'Sign Up';
-  $('t-in').classList.toggle('active',m==='in');
-  $('t-up').classList.toggle('active',m==='up');
-  $('sn').style.display=m==='up'?'block':'none';
-  $('se').style.display=m==='up'?'block':'none';
-  $('ae').textContent='';
+// ═══ NAME ENTRY ═══
+async function enterName(){
+  const n=$('name-in').value.trim();
+  if(!n){$('name-er').textContent='Enter your name!';return;}
+  if(n.length<2){$('name-er').textContent='Name too short.';return;}
+  MY_NAME=n;
+  localStorage.setItem('hub_name',n);
+  await checkBan(n);
 }
-$('auth-btn').addEventListener('click',e=>doAuth(e.shiftKey));
-async function doAuth(shift=false){
-  const user=$('su').value.trim().toLowerCase();
-  const pw=$('sp').value.trim();
-  const err=$('ae');
-  err.textContent='';
-  if(!user||!pw){err.textContent='Fill in all fields.';return;}
 
+async function checkBan(name){
   const s=await dbG('settings','id','main');
-  const aPw=s?.admin_password||'admin999';
-  const uPw=s?.user_password||'euphoria123';
-  const suOn=s?.signups_open!==false;
-
-  if(shift){
-    if(pw===aPw){
-      ADM=true;ME={username:'admin',name:'Admin'};
-      hide('auth');
-      $('fab').style.display='flex';
-    }else{err.textContent='Wrong admin password.';}
-    return;
+  // check banned words
+  if(s?.banned_words){
+    try{
+      const bw=JSON.parse(s.banned_words)||[];
+      const lname=name.toLowerCase();
+      for(const w of bw){if(lname.includes(w.toLowerCase())){show('ban-sc');$('ban-rsn').textContent='Auto-banned: name contains restricted word.';$('ban-rsn').style.display='block';return;}}
+    }catch(e){}
   }
-
-  if(MODE==='up'){
-    if(!suOn){err.textContent='Signups are currently closed.';return;}
-    const name=$('sn').value.trim();
-    if(!name){err.textContent='Enter your name.';return;}
-    if(pw!==uPw){err.textContent='Wrong site password.';return;}
-    const ex=await dbG('users','username',user);
-    if(ex){err.textContent='Username already taken.';return;}
-    const ok=await dbU('users',{username:user,name,password:pw,status:'pending',email:$('se').value.trim(),joined_at:new Date().toISOString()},'username');
-    if(ok){hide('auth');show('pend');}
-    else{err.textContent='Signup failed. Try again.';}
-    return;
+  // check VIP
+  let isVIP=false;
+  if(s?.vip_names){try{const vips=JSON.parse(s.vip_names)||[];isVIP=vips.map(v=>v.toLowerCase()).includes(name.toLowerCase());}catch(e){}}
+  // upsert user
+  const existing=await dbG('users','username',name.toLowerCase());
+  if(existing){
+    if(existing.status==='banned'){
+      hide('name-sc');show('ban-sc');
+      if(existing.ban_reason){$('ban-rsn').textContent='Reason: '+existing.ban_reason;$('ban-rsn').style.display='block';}
+      return;
+    }
+    // update last seen
+    await dbP('users','username',name.toLowerCase(),{last_seen:new Date().toISOString(),current_tab:'Browser',visit_count:(existing.visit_count||0)+1});
+  }else{
+    const status=isVIP?'active':'active';// auto approve all for name-only mode
+    await dbU('users',{username:name.toLowerCase(),name,status,joined_at:new Date().toISOString(),last_seen:new Date().toISOString(),current_tab:'Browser',visit_count:1,is_vip:isVIP},'username');
+    await logA(name,'Joined the site','');
   }
-
-  const u=await dbG('users','username',user);
-  if(!u){err.textContent='Account not found.';return;}
-  if(u.password!==pw){err.textContent='Wrong password.';return;}
-  if(u.status==='banned'){
-    hide('auth');show('ban');
-    if(u.ban_reason){$('ban-reason').textContent='Reason: '+u.ban_reason;$('ban-reason').style.display='block';}
-    return;
-  }
-  if(u.status==='pending'){hide('auth');show('pend');return;}
-  ME=u;hide('auth');
+  hide('name-sc');
+  ME={username:name.toLowerCase(),name};
+  // update tab every 2 minutes
+  setInterval(()=>{if(ME)dbP('users','username',ME.username,{last_seen:new Date().toISOString(),current_tab:curTab});},120000);
 }
 
-// ADMIN
+// ═══ ADMIN ═══
 async function oadm(){
   if(!ADM)return;
   $('adm').classList.remove('hidden');
   ap('dash');
-  ldStats();lu('all');rThs();rTogs();renderFTogs();
+  ldStats();lu('all');rThs();renderFTogs();ldLog();ldLive();ldNets();ldEmails();ldPollRes();
 }
 function cadm(){hide('adm');}
-function lout(){ADM=false;ME=null;$('fab').style.display='none';hide('adm');show('auth');}
+function lout(){ADM=false;ME=null;$('fab').style.display='none';hide('adm');show('name-sc');}
 function ap(n){
   document.querySelectorAll('.ap').forEach(p=>p.classList.remove('active'));
   document.querySelectorAll('.an').forEach(b=>b.classList.remove('active'));
   $('pg-'+n).classList.add('active');
-  document.querySelector(`.an[onclick="ap('${n}')"]`).classList.add('active');
+  const btn=document.querySelector(`.an[onclick="ap('${n}')"]`);
+  if(btn)btn.classList.add('active');
 }
+
+// admin login via secret key combo (Ctrl+Shift+A)
+document.addEventListener('keydown',async e=>{
+  if(e.ctrlKey&&e.shiftKey&&e.key==='A'){
+    const pw=prompt('Admin password:');
+    if(!pw)return;
+    const s=await dbG('settings','id','main');
+    const aPw=s?.admin_password||'admin999';
+    if(pw===aPw){ADM=true;ME={username:'admin',name:'Admin'};$('fab').style.display='flex';hide('name-sc');alert('✅ Admin access granted');}
+    else alert('❌ Wrong password');
+  }
+});
 
 async function ldStats(){
   const u=await dbA('users');
@@ -819,155 +1113,262 @@ async function ldStats(){
   $('st1').textContent=u.filter(x=>x.status==='active').length;
   $('st2').textContent=u.filter(x=>x.status==='pending').length;
   $('st3').textContent=u.filter(x=>x.status==='banned').length;
+  const five=new Date(Date.now()-5*60000).toISOString();
+  $('st4').textContent=u.filter(x=>x.last_seen&&x.last_seen>five).length;
+  try{const{data}=await sb.from('networks').select('id');$('st5').textContent=(data||[]).length;}catch(e){}
 }
 
 async function rTogs(){
   const s=await dbG('settings','id','main');
   const on=s?.site_enabled!==false;
   const su=s?.signups_open!==false;
-  [$('stog'),$('stog2')].forEach(t=>{if(t)t.className='tog '+(on?'on':'off');});
+  [$('stog'),$('stog2')].forEach(t=>{if(t)t.className='tg '+(on?'on':'off');});
   [$('slbl'),$('slbl2')].forEach(l=>{if(l)l.textContent=on?'Site ENABLED ✅':'Site DISABLED 🔴';});
-  const st=$('sutog');if(st)st.className='tog '+(su?'on':'off');
-  const sl=$('sulbl');if(sl)sl.textContent=su?'Signups OPEN':'Signups CLOSED';
+  const st=$('sutog');if(st)st.className='tg '+(su?'on':'off');
+  const sl=$('sulbl');if(sl)sl.textContent=su?'Entry OPEN':'Entry CLOSED';
+  const ait=$('ai-tog');const ail=$('ai-lbl');
+  if(ait&&ail){const aion=s?.ai_manager_on===true;ait.className='tg '+(aion?'on':'off');ail.textContent='AI Manager '+(aion?'ON':'OFF');}
 }
 
-async function togSite(){
-  const s=await dbG('settings','id','main');
-  const cur=s?.site_enabled!==false;
-  await dbU('settings',{id:'main',site_enabled:!cur},'id');
-  rTogs();
-}
-async function togSu(){
-  const s=await dbG('settings','id','main');
-  const cur=s?.signups_open!==false;
-  await dbU('settings',{id:'main',signups_open:!cur},'id');
-  rTogs();
-}
+async function togSite(){const s=await dbG('settings','id','main');const cur=s?.site_enabled!==false;const ok=await dbU('settings',{id:'main',site_enabled:!cur},'id');if(ok){await logA('admin',cur?'Site disabled':'Site enabled','');rTogs();}}
+async function togSu(){const s=await dbG('settings','id','main');const cur=s?.signups_open!==false;await dbU('settings',{id:'main',signups_open:!cur},'id');rTogs();}
+async function togAI(){const s=await dbG('settings','id','main');const cur=s?.ai_manager_on===true;await dbU('settings',{id:'main',ai_manager_on:!cur},'id');rTogs();}
+async function emergOff(){if(!confirm('EMERGENCY SHUTDOWN — disable site for everyone NOW?'))return;const ok=await dbU('settings',{id:'main',site_enabled:false,maint_msg:'Site temporarily unavailable. Check back soon.'},'id');await logA('admin','EMERGENCY SHUTDOWN','');msg('emerg-ok',ok?'🚨 Site shut down!':'❌ Failed',!ok);}
 
-// USERS
+// ═══ USERS ═══
 let AUSERS=[];
 async function lu(f='all'){
-  const l=$('ulist');l.innerHTML='<div style="color:var(--m);font-size:12px">Loading…</div>';
-  AUSERS=await dbA('users',f);
-  rusr(AUSERS);
+  const l=$('ulist');if(!l)return;
+  l.innerHTML='<div style="color:var(--m);font-size:12px">Loading…</div>';
+  AUSERS=await dbA('users',f);rusr(AUSERS);
 }
 function rusr(list){
-  const l=$('ulist');l.innerHTML='';
+  const l=$('ulist');if(!l)return;l.innerHTML='';
   if(!list.length){l.innerHTML='<div style="color:var(--m);font-size:12px">No users found.</div>';return;}
   list.forEach(u=>{
     const r=document.createElement('div');r.className='ur';
     let bt='';
-    if(u.status==='pending')bt=`<button class="ub ap" onclick="ss('${u.username}','active')">Approve</button><button class="ub dy" onclick="ss('${u.username}','banned')">Deny</button>`;
-    else if(u.status==='active')bt=`<button class="ub bn" onclick="ss('${u.username}','banned')">Ban</button>`;
-    else if(u.status==='banned')bt=`<button class="ub ub2" onclick="ss('${u.username}','active')">Unban</button>`;
-    bt+=`<button class="ub dl" onclick="du('${u.username}')">🗑</button>`;
-    r.innerHTML=`<div class="un">${u.name||u.username} <span style="color:var(--m);font-size:10px">@${u.username}</span></div><span class="ubg ${u.status}">${u.status}</span><div class="ubs">${bt}</div>`;
+    if(u.status==='pending')bt=`<button class="ua ap" onclick="ss('${u.username}','active')">Approve</button><button class="ua dy" onclick="ss('${u.username}','banned')">Deny</button>`;
+    else if(u.status==='active')bt=`<button class="ua bn" onclick="ss('${u.username}','banned')">Ban</button>`;
+    else if(u.status==='banned')bt=`<button class="ua ub2" onclick="ss('${u.username}','active')">Unban</button>`;
+    bt+=`<button class="ua dl" onclick="du('${u.username}')">🗑</button>`;
+    const tab=u.current_tab?` <span style="font-size:9px;color:var(--a3)">[${u.current_tab}]</span>`:'';
+    const vip=u.is_vip?` <span style="font-size:9px;color:var(--y)">⭐VIP</span>`:'';
+    const visits=u.visit_count?` <span style="font-size:9px;color:var(--m)">${u.visit_count} visits</span>`:'';
+    r.innerHTML=`<div class="un">${u.name||u.username}${vip}${tab}<br><span style="color:var(--m);font-size:10px">@${u.username}${visits}</span></div><span class="ub ${u.status}">${u.status}</span><div class="ubs">${bt}</div>`;
     l.appendChild(r);
   });
 }
 function fusr(q){const s=q.toLowerCase();rusr(AUSERS.filter(u=>(u.name||'').toLowerCase().includes(s)||u.username.toLowerCase().includes(s)));}
-async function ss(u,s){await dbP('users','username',u,{status:s});lu('all');ldStats();}
-async function du(u){if(!confirm('Delete @'+u+'?'))return;await dbD('users','username',u);lu('all');ldStats();}
-async function appAll(){const u=await dbA('users','pending');for(const x of u)await dbP('users','username',x.username,{status:'active'});msg('app-ok','✅ Approved '+u.length+' users!');lu('all');ldStats();}
-async function banWR(){
-  const u=$('ban-u').value.trim().toLowerCase();
-  const r=$('ban-r').value.trim();
-  if(!u){msg('ban-ok','Enter a username',true);return;}
-  await dbP('users','username',u,{status:'banned',ban_reason:r});
-  msg('ban-ok','✅ Banned @'+u+(r?' — reason saved':''));
-  $('ban-u').value='';$('ban-r').value='';
-  lu('all');
-}
-async function banEv(){if(!confirm('Ban ALL?'))return;const u=await dbA('users');for(const x of u)await dbP('users','username',x.username,{status:'banned'});msg('bev-ok','🚫 Banned everyone');lu('all');}
-async function delEv(){if(!confirm('DELETE ALL USERS?'))return;const u=await dbA('users');for(const x of u)await dbD('users','username',x.username);msg('dev-ok','🗑 Deleted all');lu('all');ldStats();}
+async function ss(u,s){const ok=await dbP('users','username',u,{status:s});if(ok){await logA('admin',`Set @${u} to ${s}`,'');lu('all');ldStats();}else msg('bulk-ok','❌ Failed — check Supabase RLS',true);}
+async function du(u){if(!confirm('Delete @'+u+'?'))return;const ok=await dbD('users','username',u);if(ok){await logA('admin','Deleted @'+u,'');lu('all');ldStats();}else msg('bulk-ok','❌ Failed',true);}
+async function appAll(){const u=await dbA('users','pending');let c=0;for(const x of u){const ok=await dbP('users','username',x.username,{status:'active'});if(ok)c++;}await logA('admin','Approved all pending','count:'+c);msg('bulk-ok','✅ Approved '+c+' users!');lu('all');ldStats();}
+async function banAll(){if(!confirm('Ban ALL users?'))return;const u=await dbA('users');for(const x of u)await dbP('users','username',x.username,{status:'banned'});await logA('admin','Banned all users','');msg('bulk-ok','🚫 Banned everyone');lu('all');}
+async function delAll(){if(!confirm('DELETE ALL USERS PERMANENTLY?'))return;const u=await dbA('users');for(const x of u)await dbD('users','username',x.username);await logA('admin','Deleted all users','');msg('dev-ok','🗑 All deleted');lu('all');ldStats();}
+async function banWR(){const u=$('ban-u').value.trim().toLowerCase();const r=$('ban-r').value.trim();if(!u){msg('ban-ok','Enter a name',true);return;}const ok=await dbP('users','username',u,{status:'banned',ban_reason:r});if(ok){await logA('admin','Banned @'+u,r);msg('ban-ok','✅ Banned @'+u+(r?' with reason':''));$('ban-u').value='';$('ban-r').value='';}else msg('ban-ok','❌ User not found — they must have visited first',true);lu('all');}
 
-// BROADCAST
-async function sndAnn(){const t=$('ann-in').value.trim();if(!t){msg('ann-ok','Type something',true);return;}const ok=await dbU('settings',{id:'main',announcement:t},'id');msg('ann-ok',ok?'✅ Sent!':'❌ Failed — check Supabase RLS',!ok);}
-async function clrAnn(){await dbU('settings',{id:'main',announcement:''},'id');msg('ann-ok','✅ Cleared');}
-async function sndAlrt(){const t=$('alrt-in').value.trim();if(!t){msg('alrt-ok','Type something',true);return;}const ok=await dbU('settings',{id:'main',alert_msg:t},'id');setTimeout(()=>dbU('settings',{id:'main',alert_msg:''},'id'),5000);msg('alrt-ok',ok?'✅ Alert sent!':'❌ Failed',!ok);$('alrt-in').value='';}
-async function kickAll(){
-  const mins=parseInt($('kick-min').value)||0;
-  const km=$('kick-msg').value.trim()||'Be back soon!';
-  if(!mins){msg('kick-ok','Enter minutes',true);return;}
-  const until=Date.now()+(mins*60000);
-  const ok=await dbU('settings',{id:'main',kick_until:until,kick_message:km},'id');
-  msg('kick-ok',ok?'✅ Everyone kicked for '+mins+' min':'❌ Failed',!ok);
-  $('kick-min').value='';$('kick-msg').value='';
+// VIP
+async function addVIP(){const n=$('vip-in').value.trim();if(!n)return;const s=await dbG('settings','id','main');let vips=[];try{vips=JSON.parse(s?.vip_names||'[]');}catch(e){}if(!vips.includes(n))vips.push(n);const ok=await dbU('settings',{id:'main',vip_names:JSON.stringify(vips)},'id');if(ok){$('vip-in').value='';ldVIPs();msg('vip-ok','✅ Added '+n+' to VIP');}else msg('vip-ok','❌ Failed',true);}
+async function ldVIPs(){const s=await dbG('settings','id','main');let vips=[];try{vips=JSON.parse(s?.vip_names||'[]');}catch(e){}const el=$('vip-list');if(el)el.textContent=vips.length?'VIPs: '+vips.join(', '):'No VIPs set';}
+async function addBWord(){const w=$('bword-in').value.trim().toLowerCase();if(!w)return;const s=await dbG('settings','id','main');let bw=[];try{bw=JSON.parse(s?.banned_words||'[]');}catch(e){}if(!bw.includes(w))bw.push(w);const ok=await dbU('settings',{id:'main',banned_words:JSON.stringify(bw)},'id');if(ok){$('bword-in').value='';ldBWords();msg('bword-ok','✅ Added banned word: '+w);}else msg('bword-ok','❌ Failed',true);}
+async function ldBWords(){const s=await dbG('settings','id','main');let bw=[];try{bw=JSON.parse(s?.banned_words||'[]');}catch(e){}const el=$('bword-list');if(el)el.textContent=bw.length?'Banned words: '+bw.join(', '):'None set';}
+
+// ═══ LIVE ACTIVITY ═══
+async function ldLive(){
+  const el=$('live-list');const cnt=$('live-count');if(!el)return;
+  el.innerHTML='<div style="color:var(--m);font-size:12px">Loading…</div>';
+  const five=new Date(Date.now()-5*60000).toISOString();
+  try{
+    const{data}=await sb.from('users').select('*').gt('last_seen',five);
+    const users=data||[];
+    if(cnt)cnt.textContent=users.length;
+    if(!users.length){el.innerHTML='<div style="color:var(--m);font-size:12px">Nobody online right now.</div>';return;}
+    el.innerHTML=users.map(u=>`<div class="ur"><div class="un">${u.name||u.username} <span style="color:var(--a3);font-size:10px">[${u.current_tab||'?'}]</span></div><span style="font-size:10px;color:var(--m)">${u.last_seen?new Date(u.last_seen).toLocaleTimeString():''}</span></div>`).join('');
+  }catch(e){el.innerHTML='<div style="color:var(--r);font-size:12px">Failed to load.</div>';}
 }
 
-// ACCESS
-async function chUPw(){const v=$('nup').value.trim();if(!v){msg('upw-ok','Enter a password',true);return;}const ok=await dbU('settings',{id:'main',user_password:v},'id');$('nup').value='';msg('upw-ok',ok?'✅ Updated for everyone!':'❌ Failed',!ok);}
-async function chAPw(){const v=$('nap').value.trim();if(!v){msg('apw-ok','Enter a password',true);return;}const ok=await dbU('settings',{id:'main',admin_password:v},'id');$('nap').value='';msg('apw-ok',ok?'✅ Updated!':'❌ Failed',!ok);}
+// ═══ BROADCAST ═══
+async function sndAnn(){const t=$('ann-in').value.trim();if(!t){msg('ann-ok','Type something',true);return;}const ok=await dbU('settings',{id:'main',announcement:t},'id');await logA('admin','Announcement sent',t);msg('ann-ok',ok?'✅ Sent to everyone!':'❌ Failed — check Supabase RLS. Make sure RLS is disabled.',!ok);}
+async function clrAnn(){const ok=await dbU('settings',{id:'main',announcement:''},'id');msg('ann-ok',ok?'✅ Cleared':'❌ Failed',!ok);}
+async function sndPin(){const t=$('pin-in').value.trim();if(!t)return;const ok=await dbU('settings',{id:'main',pinned_msg:t},'id');msg('pin-ok',ok?'✅ Pinned!':'❌ Failed',!ok);}
+async function clrPin(){const ok=await dbU('settings',{id:'main',pinned_msg:''},'id');msg('pin-ok',ok?'✅ Cleared':'❌ Failed',!ok);}
+async function sndAlrt(){const t=$('alrt-in').value.trim();if(!t){msg('alrt-ok','Type something',true);return;}const ok=await dbU('settings',{id:'main',alert_msg:t},'id');setTimeout(()=>dbU('settings',{id:'main',alert_msg:''},'id'),6000);await logA('admin','Alert sent',t);msg('alrt-ok',ok?'✅ Alert sent!':'❌ Failed',!ok);$('alrt-in').value='';}
+async function kickAll(){const m=parseInt($('kick-m').value)||0;const km=$('kick-msg-in').value.trim()||'Be back soon!';if(!m){msg('kick-ok','Enter minutes',true);return;}const until=Date.now()+(m*60000);const ok=await dbU('settings',{id:'main',kick_until:until,kick_message:km},'id');await logA('admin','Kicked everyone off',m+' mins');msg('kick-ok',ok?'✅ Kicked everyone for '+m+' min':'❌ Failed',!ok);$('kick-m').value='';$('kick-msg-in').value='';}
+async function setEvent(){const n=$('ev-name').value.trim();const t=$('ev-time').value;if(!n||!t){msg('ev-ok','Fill in both fields',true);return;}const ok=await dbU('settings',{id:'main',event_name:n,event_time:new Date(t).getTime()},'id');msg('ev-ok',ok?'✅ Event set!':'❌ Failed',!ok);}
+async function clrEvent(){const ok=await dbU('settings',{id:'main',event_name:'',event_time:0},'id');msg('ev-ok',ok?'✅ Cleared':'❌ Failed',!ok);}
+async function savMOTD(){const t=$('motd-in').value.trim();const ok=await dbU('settings',{id:'main',motd:t},'id');msg('motd-ok',ok?'✅ MOTD saved!':'❌ Failed',!ok);}
 
-// APPEARANCE
-async function savCSS(){const c=$('ccss').value;$('ccs').textContent=c;const ok=await dbU('settings',{id:'main',custom_css:c},'id');msg('css-ok',ok?'✅ Applied!':'❌ Failed',!ok);}
+// ═══ ACCESS ═══
+async function togSite(){const s=await dbG('settings','id','main');const cur=s?.site_enabled!==false;const ok=await dbU('settings',{id:'main',site_enabled:!cur},'id');if(ok){await logA('admin',cur?'Site disabled':'Site enabled','');rTogs();}}
+async function chAPw(){const v=$('nap').value.trim();if(!v){msg('apw-ok','Enter a password',true);return;}const ok=await dbU('settings',{id:'main',admin_password:v},'id');$('nap').value='';await logA('admin','Admin password changed','');msg('apw-ok',ok?'✅ Updated!':'❌ Failed',!ok);}
+async function savMax(){const v=parseInt($('max-u').value)||0;const ok=await dbU('settings',{id:'main',max_users:v},'id');msg('max-ok',ok?'✅ Saved! Max: '+(v||'unlimited'):'❌ Failed',!ok);}
+async function savMaint(){const t=$('maint-in').value.trim();const ok=await dbU('settings',{id:'main',maint_msg:t},'id');msg('maint-ok',ok?'✅ Saved!':'❌ Failed',!ok);}
+
+// ═══ APPEARANCE ═══
+async function savCSS(){const c=$('ccss').value;$('ccs').textContent=c;const ok=await dbU('settings',{id:'main',custom_css:c},'id');await logA('admin','Custom CSS applied','');msg('css-ok',ok?'✅ Applied for everyone!':'❌ Failed',!ok);}
 async function clrCSS(){$('ccs').textContent='';$('ccss').value='';const ok=await dbU('settings',{id:'main',custom_css:''},'id');msg('css-ok',ok?'✅ Cleared':'❌ Failed',!ok);}
+async function savLdMsg(){const t=$('ldmsg-in').value.trim();const ok=await dbU('settings',{id:'main',loading_msg:t},'id');msg('ldmsg-ok',ok?'✅ Saved!':'❌ Failed',!ok);}
 
-// SITE RESET
-async function sReset(){if(!confirm('Reset site state?'))return;await dbU('settings',{id:'main',announcement:'',global_image:'',custom_css:'',alert_msg:'',kick_until:0,kick_message:''},'id');$('ccs').textContent='';msg('rst-ok','✅ Reset!');}
+// ═══ NETWORKS ═══
+async function ldNets(){
+  const el=$('nw-list');if(!el)return;
+  el.innerHTML='<div style="color:var(--m);font-size:12px">Loading…</div>';
+  try{
+    const{data}=await sb.from('networks').select('*').order('last_seen',{ascending:false});
+    if(!data||!data.length){el.innerHTML='<div style="color:var(--m);font-size:12px">No networks recorded yet.</div>';return;}
+    el.innerHTML=data.map(n=>`<div class="nw-item"><div class="nw-name">${n.network_name||n.ip_range||'Unknown'}</div><span style="font-size:10px;color:${n.blocked?'var(--r)':'var(--g)'}">${n.blocked?'BLOCKED':'ALLOWED'}</span><button class="ua ${n.blocked?'ub2':'bn'}" onclick="togNet(${n.id},${n.blocked})">${n.blocked?'Unblock':'Block'}</button></div>`).join('');
+  }catch(e){el.innerHTML='<div style="color:var(--m);font-size:12px">Networks table not available.</div>';}
+}
+async function togNet(id,blocked){await dbP('networks','id',id,{blocked:!blocked});await logA('admin',(blocked?'Unblocked':'Blocked')+' network','id:'+id);ldNets();}
+async function blockNet(){const n=$('nw-in').value.trim();if(!n){msg('nw-ok','Enter a network name',true);return;}await dbIns('networks',{network_name:n,ip_range:n,blocked:true,first_seen:new Date().toISOString(),last_seen:new Date().toISOString()});await logA('admin','Manually blocked network',n);msg('nw-ok','✅ Blocked: '+n);$('nw-in').value='';ldNets();}
 
-// BACKUP
+// ═══ EMAIL ═══
+async function ldEmails(){
+  const el=$('em-list');if(!el)return;
+  const users=await dbA('users');
+  const emails=users.filter(u=>u.email&&u.email.trim()).map(u=>u.email);
+  el.textContent=emails.length?emails.length+' emails: '+emails.join(', '):'No emails collected yet. Users must enter email on signup.';
+}
+async function sendMassEmail(){
+  const sub=$('em-sub').value.trim();const body=$('em-body').value.trim();
+  if(!sub||!body){msg('em-ok','Fill in subject and body',true);return;}
+  const users=await dbA('users');
+  const emails=users.filter(u=>u.email&&u.email.trim()).map(u=>u.email);
+  if(!emails.length){msg('em-ok','No emails collected yet',true);return;}
+  const bcc=emails.join(',');
+  window.location.href=`mailto:?bcc=${encodeURIComponent(bcc)}&subject=${encodeURIComponent(sub)}&body=${encodeURIComponent(body)}`;
+  await logA('admin','Mass email opened','to '+emails.length+' recipients');
+  msg('em-ok','✅ Email client opened with '+emails.length+' recipients!');
+}
+
+// ═══ POLLS ═══
+async function savPoll(){
+  const q=$('poll-q').value.trim();
+  const opts=[$('poll-o1'),$('poll-o2'),$('poll-o3'),$('poll-o4')].map(i=>i.value.trim()).filter(Boolean);
+  if(!q||opts.length<2){msg('poll-ok','Need a question and at least 2 options',true);return;}
+  const ok=await dbU('settings',{id:'main',poll_question:q,poll_options:JSON.stringify(opts),poll_votes:'{}'},'id');
+  await logA('admin','Poll created',q);msg('poll-ok',ok?'✅ Poll live for all users!':'❌ Failed',!ok);
+}
+async function clrPoll(){const ok=await dbU('settings',{id:'main',poll_question:'',poll_options:'[]',poll_votes:'{}'},'id');msg('poll-ok',ok?'✅ Poll cleared':'❌ Failed',!ok);$('poll-res').textContent='No active poll.';}
+async function ldPollRes(){
+  const el=$('poll-res');if(!el)return;
+  const s=await dbG('settings','id','main');
+  if(!s?.poll_question){el.textContent='No active poll.';return;}
+  let opts=[],votes={};
+  try{opts=JSON.parse(s.poll_options||'[]');}catch(e){}
+  try{votes=JSON.parse(s.poll_votes||'{}');}catch(e){}
+  const total=Object.values(votes).reduce((a,b)=>a+b,0)||1;
+  el.innerHTML=`<div style="font-weight:700;margin-bottom:8px">${s.poll_question}</div>`+opts.map(o=>{const v=votes[o]||0;const pct=Math.round((v/total)*100);return`<div class="poll-opt"><span style="flex:1;font-size:12px">${o}</span><span style="font-size:12px;color:var(--a);margin:0 8px">${v} votes (${pct}%)</span><div style="width:80px;background:var(--b);border-radius:3px;height:6px"><div class="poll-bar" style="width:${pct}%"></div></div></div>`;}).join('');
+}
+
+// ═══ GAMES ADMIN ═══
+async function savFG(){const g=$('fg-in').value.trim();if(!g)return;const ok=await dbU('settings',{id:'main',featured_game:g},'id');msg('fg-ok',ok?'✅ Featured game set!':'❌ Failed',!ok);}
+async function savGW(){const g=$('gw-in').value.trim();if(!g)return;const ok=await dbU('settings',{id:'main',game_of_week:g},'id');msg('gw-ok',ok?'✅ Game of week set!':'❌ Failed',!ok);}
+
+// ═══ AI MANAGER ═══
+async function savAIRules(){const r=$('ai-rules').value.trim();const ok=await dbU('settings',{id:'main',ai_manager_rules:r},'id');msg('ai-ok',ok?'✅ Rules saved!':'❌ Failed',!ok);}
+async function aiCmd(){
+  const q=$('ai-cmd').value.trim();if(!q)return;
+  const chat=$('ai-chat');
+  chat.innerHTML+=`<div style="color:var(--a3);margin-bottom:6px"><strong>You:</strong> ${q}</div>`;
+  $('ai-cmd').value='';
+  chat.innerHTML+='<div id="ai-thk" style="color:var(--m)">Thinking…</div>';
+  chat.scrollTop=chat.scrollHeight;
+  try{
+    const users=await dbA('users');const s=await dbG('settings','id','main');
+    const ctx=`You are an AI admin assistant for a website called Hub. Here is the current site state:
+- Total users: ${users.length}
+- Active users: ${users.filter(u=>u.status==='active').length}
+- Pending users: ${users.filter(u=>u.status==='pending').length}
+- Banned users: ${users.filter(u=>u.status==='banned').length}
+- Site enabled: ${s?.site_enabled!==false}
+- Current announcement: ${s?.announcement||'none'}
+- Signups open: ${s?.signups_open!==false}
+You can answer questions about the site and suggest admin actions. If the user asks you to perform an action like "approve all users" or "send announcement", describe what you would do and confirm if they want you to proceed.`;
+    const r=await callAI(ctx,'Admin command: '+q);
+    const thk=document.getElementById('ai-thk');if(thk)thk.remove();
+    chat.innerHTML+=`<div style="color:var(--t);margin-bottom:10px"><strong style="color:var(--a)">AI:</strong> ${r.replace(/\n/g,'<br>')}</div>`;
+    chat.scrollTop=chat.scrollHeight;
+    // auto execute simple commands
+    if(q.toLowerCase().includes('approve all')){await appAll();}
+    if(q.toLowerCase().includes('send announcement')&&r){
+      const match=q.match(/announcement[:\s]+["']?(.+?)["']?$/i);
+      if(match){await dbU('settings',{id:'main',announcement:match[1]},'id');}
+    }
+  }catch(e){
+    const thk=document.getElementById('ai-thk');if(thk)thk.remove();
+    chat.innerHTML+=`<div style="color:var(--r);margin-bottom:6px">AI Error: ${e.message}</div>`;
+  }
+}
+
+// ═══ BACKUP ═══
 async function dlBak(){
   const u=await dbA('users');const s=await dbG('settings','id','main');
-  const b={version:'1.0',date:new Date().toISOString(),users:u,settings:s};
+  const b={version:'2.0',date:new Date().toISOString(),users:u,settings:s};
   const bl=new Blob([JSON.stringify(b,null,2)],{type:'application/json'});
-  const url=URL.createObjectURL(bl);
-  const a=document.createElement('a');a.href=url;a.download='hub-backup-'+new Date().toISOString().split('T')[0]+'.json';a.click();
-  URL.revokeObjectURL(url);
-  const t=new Date().toLocaleString();localStorage.setItem('hub_bak_t',t);
-  const el=$('lb-t');if(el)el.textContent=t;
+  const url=URL.createObjectURL(bl);const a=document.createElement('a');a.href=url;a.download='hub-backup-'+new Date().toISOString().split('T')[0]+'.json';a.click();URL.revokeObjectURL(url);
+  await logA('admin','Backup downloaded','');
+  const t=new Date().toLocaleString();localStorage.setItem('hub_bak_t',t);const el=$('lb-t');if(el)el.textContent=t;
   msg('bak-ok','✅ Downloaded!');
 }
 async function restBak(){
-  const fi=$('rf');if(!fi.files.length){msg('bak-ok','Select a file',true);return;}
+  const fi=$('rf');if(!fi.files.length){msg('bak-ok','Select a file first',true);return;}
   const rd=new FileReader();
   rd.onload=async e=>{
     try{
       const b=JSON.parse(e.target.result);
-      if(!b.users||!b.settings){msg('bak-ok','❌ Invalid file',true);return;}
+      if(!b.users||!b.settings){msg('bak-ok','❌ Invalid backup file',true);return;}
+      msg('bak-ok','Restoring…');
       await dbU('settings',b.settings,'id');
-      for(const u of b.users)await dbU('users',u,'username');
-      msg('bak-ok','✅ Restored '+b.users.length+' users!');
+      let c=0;for(const u of b.users){await dbU('users',u,'username');c++;}
+      await logA('admin','Backup restored',c+' users');
+      msg('bak-ok','✅ Restored '+c+' users!');
       lu('all');rTogs();
-    }catch(err){msg('bak-ok','❌ Failed',true);}
+    }catch(err){msg('bak-ok','❌ Restore failed: '+err.message,true);}
   };
   rd.readAsText(fi.files[0]);
 }
 async function expCSV(){
   const u=await dbA('users');
-  const rows=['username,name,status,email,joined_at',...u.map(x=>`${x.username},${x.name||''},${x.status},${x.email||''},${x.joined_at||''}`)];
-  const bl=new Blob([rows.join('\n')],{type:'text/csv'});
-  const url=URL.createObjectURL(bl);
-  const a=document.createElement('a');a.href=url;a.download='users.csv';a.click();
-  URL.revokeObjectURL(url);
+  const rows=['username,name,status,email,joined_at,visit_count',...u.map(x=>`${x.username},${x.name||''},${x.status},${x.email||''},${x.joined_at||''},${x.visit_count||0}`)];
+  const bl=new Blob([rows.join('\n')],{type:'text/csv'});const url=URL.createObjectURL(bl);const a=document.createElement('a');a.href=url;a.download='hub-users-'+new Date().toISOString().split('T')[0]+'.csv';a.click();URL.revokeObjectURL(url);
+  await logA('admin','CSV exported','');
 }
 
-// TABS
+// ═══ SITE RESET ═══
+async function sReset(){if(!confirm('Reset site state?'))return;await dbU('settings',{id:'main',announcement:'',pinned_msg:'',global_image:'',custom_css:'',alert_msg:'',kick_until:0,kick_message:''},'id');$('ccs').textContent='';await logA('admin','Site state reset','');msg('rst-ok','✅ Reset!');}
+
+// ═══ CONNECTION TEST ═══
+async function testConn(){
+  const el=$('conn-st');if(!el)return;
+  el.textContent='Testing…';el.style.color='var(--m)';
+  try{
+    const{data,error}=await sb.from('settings').select('id').eq('id','main').maybeSingle();
+    if(error)throw error;
+    if(data){el.textContent='✅ Connected — settings row found';el.style.color='var(--a3)';}
+    else{el.textContent='⚠️ Connected but no settings row — run the SQL';el.style.color='var(--y)';}
+  }catch(e){el.textContent='❌ Failed: '+e.message;el.style.color='var(--r)';}
+}
+
+// ═══ TABS ═══
+let curTab='Browser';
 function gt(n){
   document.querySelectorAll('.pn').forEach(p=>p.classList.remove('active'));
   document.querySelectorAll('.stb').forEach(b=>b.classList.remove('active'));
   $('p'+n).classList.add('active');
-  document.querySelector(`[data-t="${n}"]`).classList.add('active');
+  const btn=document.querySelector(`[data-t="${n}"]`);if(btn)btn.classList.add('active');
+  const tabNames={B:'Browser',E:'Euphoria',G:'Games',S:'Music',A:'AI'};
+  curTab=tabNames[n]||n;
+  if(ME)dbP('users','username',ME.username,{current_tab:curTab}).catch(()=>{});
 }
 
-// BROWSER
+// ═══ BROWSER ═══
 const FR=$('sf'),HM=$('bhm'),LB=$('lb'),LK=$('lk'),UB=$('ub');
 let BH=[],BI=-1;
 function ld(){LB.style.opacity='1';LB.style.width='70%';}
 function uld(){LB.style.width='100%';setTimeout(()=>{LB.style.opacity='0';LB.style.width='0%';},400);}
-function res(s){
-  s=s.trim();if(!s)return null;
-  if(/^https?:\/\//i.test(s))return s;
-  if(/^[a-z0-9-]+\.[a-z]{2,}/i.test(s)&&!s.includes(' '))return 'https://'+s;
-  return 'https://www.bing.com/search?q='+encodeURIComponent(s);
-}
-function nav(url,push=true){
-  const r=res(url);if(!r)return;
-  ld();UB.value=r;LK.textContent=r.startsWith('https')?'🔒':'⚠️';
-  HM.style.display='none';FR.style.display='block';FR.src=r;
-  if(push){BH=BH.slice(0,BI+1);BH.push(r);BI=BH.length-1;}
-  nb();
-}
+function res(s){s=s.trim();if(!s)return null;if(/^https?:\/\//i.test(s))return s;if(/^[a-z0-9-]+\.[a-z]{2,}/i.test(s)&&!s.includes(' '))return 'https://'+s;return 'https://www.bing.com/search?q='+encodeURIComponent(s);}
+function nav(url,push=true){const r=res(url);if(!r)return;ld();UB.value=r;LK.textContent=r.startsWith('https')?'🔒':'⚠️';HM.style.display='none';FR.style.display='block';FR.src=r;if(push){BH=BH.slice(0,BI+1);BH.push(r);BI=BH.length-1;}nb();}
 function nb(){$('bk').disabled=BI<=0;$('fw').disabled=BI>=BH.length-1;}
 FR.addEventListener('load',()=>{uld();try{const l=FR.contentWindow.location.href;if(l&&l!=='about:blank'){UB.value=l;LK.textContent=l.startsWith('https')?'🔒':'⚠️';}}catch(e){}});
 $('go').onclick=()=>nav(UB.value);
@@ -976,25 +1377,10 @@ $('bk').onclick=()=>{if(BI>0){BI--;nav(BH[BI],false);}};
 $('fw').onclick=()=>{if(BI<BH.length-1){BI++;nav(BH[BI],false);}};
 $('rl').onclick=()=>{if(UB.value)nav(UB.value,false);};
 $('hm').onclick=()=>{FR.src='about:blank';FR.style.display='none';HM.style.display='flex';UB.value='';};
+function openYT(){window.open('https://www.youtube.com','_blank');}
+function openTT(){window.open('https://www.tiktok.com','_blank');}
 
-// YouTube, Spotify, TikTok special handlers
-function navYT(){
-  HM.style.display='none';FR.style.display='block';
-  FR.src='https://www.youtube.com/embed?listType=search&list=trending';
-  UB.value='youtube.com';
-  // YouTube blocks direct embed so open in tab
-  window.open('https://www.youtube.com','_blank');
-}
-function navSP(){
-  HM.style.display='none';FR.style.display='block';
-  FR.src='https://open.spotify.com/embed/playlist/37i9dQZF1DXcBWIGoYBM5M';
-  UB.value='open.spotify.com';
-}
-function navTT(){
-  window.open('https://www.tiktok.com','_blank');
-}
-
-// GAMES
+// ═══ GAMES ═══
 const GAMES=[
   {n:"Geometry Dash",e:"🔺",t:"Platformer",u:"https://geometrydash.io/"},
   {n:"Slope",e:"🔵",t:"Arcade",u:"https://slope-game.github.io/"},
@@ -1012,14 +1398,50 @@ const GAMES=[
   {n:"Drift Boss",e:"🚗",t:"Racing",u:"https://www.crazygames.com/game/drift-boss"},
   {n:"Agar.io",e:"🫧",t:"IO Game",u:"https://agar.io/"},
   {n:"Slither.io",e:"🐛",t:"IO Game",u:"https://slither.io/"},
+  {n:"Run 3",e:"🏃",t:"Runner",u:"https://www.coolmathgames.com/0-run-3"},
+  {n:"Fireboy & Watergirl",e:"🔥",t:"Co-op",u:"https://www.coolmathgames.com/0-fireboy-and-watergirl-in-the-forest-temple"},
 ];
 function rg(list){const g=$('gg');g.innerHTML='';list.forEach(gm=>{const c=document.createElement('div');c.className='gc';c.innerHTML=`<div class="gt">${gm.e}</div><div class="gi"><div class="gn">${gm.n}</div><div class="gtg">${gm.t}</div></div>`;c.onclick=()=>lg(gm);g.appendChild(c);});}
 function fg(q){const s=q.toLowerCase();rg(GAMES.filter(g=>g.n.toLowerCase().includes(s)||g.t.toLowerCase().includes(s)));}
-function lg(gm){$('gg').style.display='none';const fw=$('gfw');fw.style.display='flex';fw.style.height='100%';$('gf').src=gm.u;$('gft').textContent=gm.n;$('gotb').href=gm.u;$('gbk').style.display='block';}
+function lg(gm){$('gg').style.display='none';const fw=$('gfw');fw.style.display='flex';fw.style.height='100%';$('gf').src=gm.u;$('gft').textContent=gm.n;$('gotb').href=gm.u;$('gbk').style.display='block';if(ME)logA(ME.username,'Played game',gm.n);}
 function gbk(){$('gf').src='about:blank';$('gfw').style.display='none';$('gg').style.display='grid';$('gbk').style.display='none';}
 rg(GAMES);
 
-// AI
+// ═══ SPOTIFY ═══
+// Uses Spotify preview URLs — no account needed, 30 second previews
+const SP_TOKEN_URL='https://accounts.spotify.com/api/token';
+let SP_TOKEN='';
+// We use the public search via a CORS proxy for previews
+async function spSearch(){
+  const q=$('sp-q').value.trim();
+  if(!q)return;
+  const res=$('sp-results');
+  res.innerHTML='<div style="color:var(--m);font-size:13px">Searching…</div>';
+  try{
+    // Use iTunes Search API as free alternative for music previews
+    const r=await fetch(`https://itunes.apple.com/search?term=${encodeURIComponent(q)}&media=music&limit=20`);
+    const d=await r.json();
+    if(!d.results||!d.results.length){res.innerHTML='<div style="color:var(--m)">No results found.</div>';return;}
+    res.innerHTML='';
+    d.results.forEach(track=>{
+      const div=document.createElement('div');div.className='sp-track';
+      div.innerHTML=`<img src="${track.artworkUrl60||''}" alt=""/><div class="sp-info"><div class="sp-name">${track.trackName||track.collectionName}</div><div class="sp-artist">${track.artistName}</div></div>${track.previewUrl?'<button class="sp-play" onclick="playPrev(\''+track.previewUrl+'\',\''+escQ(track.trackName)+'\',\''+escQ(track.artistName)+'\',\''+escQ(track.artworkUrl60||'')+'\')">▶</button>':'<span style="font-size:10px;color:var(--m)">No preview</span>'}`;
+      res.appendChild(div);
+    });
+  }catch(e){res.innerHTML='<div style="color:var(--r)">Search failed. Check connection.</div>';}
+}
+function escQ(s){return(s||'').replace(/'/g,"\\'");}
+function playPrev(url,name,artist,art){
+  const audio=$('sp-audio');
+  audio.src=url;audio.play();
+  $('sp-name').textContent=name;
+  $('sp-artist').textContent=artist;
+  $('sp-art').src=art;
+  $('sp-player').style.display='flex';
+  if(ME)logA(ME.username,'Played music',name);
+}
+
+// ═══ AI ═══
 function ucc(){const v=$('ti').value.length;$('cc').textContent=v.toLocaleString()+' / 10,000';$('cc').classList.toggle('over',v>9500);}
 function clrAI(){$('ti').value='';$('ao').innerHTML='';$('aq').value='';ucc();}
 function bub(l,h,t){const o=$('ao');const b=document.createElement('div');b.className='bub '+t;b.innerHTML=`<div class="bl">${l}</div><div>${h}</div>`;o.appendChild(b);o.scrollTop=o.scrollHeight;}
@@ -1038,51 +1460,27 @@ async function callAI(sys,msg){
 }
 
 async function doSum(){
-  const txt=$('ti').value.trim();
-  if(!txt){alert('Paste some text first!');return;}
-  const btn=$('smb');btn.disabled=true;btn.textContent='Working…';
-  thk();
-  try{
-    const r=await callAI('You are a clear concise summarizer. Use bullet points for key points then a 2–3 sentence overall summary. Plain text only.','Summarize this:\n\n'+txt);
-    uthk();bub('✨ Summary',r.replace(/\n/g,'<br>'),'a');
-  }catch(e){
-    uthk();bub('Error','AI error: '+e.message,'e');
-    log('AI error',e);
-  }
+  const txt=$('ti').value.trim();if(!txt){alert('Paste some text first!');return;}
+  const btn=$('smb');btn.disabled=true;btn.textContent='Working…';thk();
+  try{const r=await callAI('You are a clear concise summarizer. Use bullet points for key points then a 2–3 sentence overall summary. Plain text only.','Summarize this:\n\n'+txt);uthk();bub('✨ Summary',r.replace(/\n/g,'<br>'),'a');}
+  catch(e){uthk();bub('Error','AI error: '+e.message+'. Make sure you are on HTTPS (Netlify/Vercel).','e');}
   btn.disabled=false;btn.textContent='✨ Summarize';
 }
 
 async function doAsk(){
   const txt=$('ti').value.trim();const q=$('aq').value.trim();
-  if(!txt){alert('Paste some text first!');return;}
-  if(!q){alert('Enter a question!');return;}
-  const btn=$('askb');btn.disabled=true;
-  bub('❓ Question',q,'q');$('aq').value='';thk();
-  try{
-    const r=await callAI('Answer questions based only on the provided text. If not in the text, say so clearly.','Text:\n'+txt+'\n\nQuestion: '+q);
-    uthk();bub('🤖 Answer',r.replace(/\n/g,'<br>'),'a');
-  }catch(e){
-    uthk();bub('Error','AI error: '+e.message,'e');
-    log('AI error',e);
-  }
+  if(!txt){alert('Paste some text first!');return;}if(!q){alert('Enter a question!');return;}
+  const btn=$('askb');btn.disabled=true;bub('❓ Question',q,'q');$('aq').value='';thk();
+  try{const r=await callAI('Answer questions based only on the provided text. If not in the text, say so clearly.','Text:\n'+txt+'\n\nQuestion: '+q);uthk();bub('🤖 Answer',r.replace(/\n/g,'<br>'),'a');}
+  catch(e){uthk();bub('Error','AI error: '+e.message,'e');}
   btn.disabled=false;
 }
 
 async function scanURL(){
-  const url=$('scan-url').value.trim();
-  if(!url){alert('Paste a URL first!');return;}
-  bub('🔍 Scanning',url,'q');
-  thk();
-  try{
-    const r=await callAI(
-      'You are a web page analyzer. The user will give you a URL. Summarize what that website or page is about, what information it contains, who it is for, and any key facts. Be thorough.',
-      'Analyze this URL and tell me everything about what this page/site contains and what it is about: '+url
-    );
-    uthk();bub('📋 Scan Results',r.replace(/\n/g,'<br>'),'a');
-    $('scan-url').value='';
-  }catch(e){
-    uthk();bub('Error','Scan failed: '+e.message,'e');
-  }
+  const url=$('scan-url').value.trim();if(!url){alert('Paste a URL first!');return;}
+  bub('🔍 Scanning',url,'q');thk();
+  try{const r=await callAI('You are a web analyst. Given a URL, describe what that website is about, what content it contains, who it is for, and any key information. Be detailed and helpful.','Analyze this URL and tell me everything about it: '+url);uthk();bub('📋 Scan Results',r.replace(/\n/g,'<br>'),'a');$('scan-url').value='';}
+  catch(e){uthk();bub('Error','Scan failed: '+e.message,'e');}
 }
 </script>
 </body>
